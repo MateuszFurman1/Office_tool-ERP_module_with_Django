@@ -51,6 +51,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'office_tool.urls'
+AUTH_USER_MODEL = 'office_tool_app.User'
 
 TEMPLATES = [
     {

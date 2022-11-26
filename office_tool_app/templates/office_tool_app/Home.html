@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking room system</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+</head>
+<body>
+<        <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 fixed-top">
+      <div class="container">
+        <a href="{% url 'home' %}" class="navbar-brand">Home</a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navmenu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navmenu">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a href="{% url 'create-room' %}" class="nav-link">Add conference room</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'all-rooms' %}" class="nav-link">All conference rooms</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'search-room' %}" class="nav-link">Search conference room</a>
+            </li>
+              <li class="nav-item">
+              <a href="{% url 'about' %}" class="nav-link">About us</a>
+            </li>
+
+              {% if user.is_authenticated %}
+              <li class="nav-item">
+              <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+              </li>
+              <li class="nav-item">
+              <a href="{% url 'profile' user.username %}" class="nav-link">{{ user.username }} profile</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+              <a href="{% url 'login' %}" class="nav-link">Login</a>
+                  </li>
+                  <li class="nav-item">
+              <a href="{% url 'registration' %}" class="nav-link">Sign up</a>
+            </li>
+              {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Showcase -->
+    <section
+      class="bg-dark text-light p-5 p-lg-0 pt-lg-5 text-center text-sm-start"
+    >
+      <div class="container">
+        <div class="d-sm-flex align-items-center justify-content-between">
+          <div>
+            <h1>Book a <span class="text-warning">conference room</span></h1>
+            <p class="lead my-4">
+              The smartest way to manage your conference rooms
+            </p>
+
+          </div>
+            <div>
+          <img
+            class="img-fluid p-5 d-none d-sm-block"
+            src="{% static 'img/office-icon.svg' %}"
+            alt=""
+          />
+            </div>
+        </div>
+      </div>
+    </section>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+<main role="main" class="container-xl">
+    <div class="row">
+        <div class="col-lg-12 col-md-12-p-0 col-sm-12">
+            {% include 'includes/message.html' %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</main>
+
+<div>
+
+</div>
+    <!-- Footer -->
+    <footer class="p-5 bg-dark text-white text-center position-relative">
+      <div class="container">
+        <p class="lead">Copyright &copy; 2022 Python portfolio</p>
+
+        <a href="#" class="position-absolute bottom-0 end-0 p-5">
+          <i class="bi bi-arrow-up-circle h1"></i>
+        </a>
+      </div>
+    </footer>
+<div>
+    <p>
+        {{ date }}
+    </p>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+</body>
+</html>

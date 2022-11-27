@@ -1,0 +1,22 @@
+{% extends 'office_tool_app/Base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div>
+    <form action="" class="form-label text-center" method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Send" class="btn btn-primary">
+    </form>
+{#    <div class="container text-center">#}
+{#        {% if page == 'login' %}#}
+{#            <p>Haven't signed up yet?</p>#}
+{#            <a href="{% url 'registration' %}">Sign up</a>#}
+{#        {% else %}#}
+{#            <p>Already signed up?</p>#}
+{#            <a href="{% url 'login' %}">Login</a>#}
+{#        {% endif %}#}
+{#    </div>#}
+{#</div>#}
+{% endblock content %}

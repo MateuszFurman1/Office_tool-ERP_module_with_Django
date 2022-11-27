@@ -1,0 +1,15 @@
+{% extends "office_tool_app/Base.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section col-lg-12 col-md-12 col-sm-12 tutorial-style" style="min-height:65vh;">
+    <h1><div class="border-bottom mb-4">{{ username }} profile information:</div></h1>
+    <form method="POST" >
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="form-group">
+                <button class="btn btn-primary" type="submit">Update</button>
+            </div>
+    </form>
+</div>
+{% endblock content %}

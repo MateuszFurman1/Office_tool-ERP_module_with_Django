@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'office_tool_app',
 ]
+
+AUTH_USER_MODEL = 'office_tool_app.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,7 +54,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'office_tool.urls'
-AUTH_USER_MODEL = 'office_tool_app.User'
 
 TEMPLATES = [
     {

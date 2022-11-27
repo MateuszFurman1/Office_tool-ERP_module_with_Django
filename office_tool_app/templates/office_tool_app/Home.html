@@ -1,0 +1,14 @@
+{% extends "office_tool_app/Base.html" %}
+{% load static %}
+
+{% block content %}
+{% if user.is_authenticated %}
+        <h1>Ala ma kota</h1>
+{% else %}
+    <div>
+
+            <a href="{% url 'login' %}" class="nav-link px-0 align-middle">Please login</a>
+
+    </div>
+{% endif %}
+{% endblock %}

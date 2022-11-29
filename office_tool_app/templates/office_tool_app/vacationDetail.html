@@ -1,27 +1,34 @@
-{% extends "office_tool_app/Base.html" %}
+{% extends "office_tool_app/Base2col.html" %}
 {% load static %}
 
 {% block content %}
-{#{% if user.is_authenticated %}#}
-{#    <div class="card mt-5 border border-dark" style="width: auto;" >#}
-{#        <div class="card-body">#}
-{#        <h5 class="card-title">Your pending vacations:</h5>#}
-{#        <p class="card-text">#}
-{#        {% for vacation in vacations %}#}
-{#        from: {{ vacation.vacation_from }}<br>#}
-{#          to: {{ vacation.vacation_to }}<br>#}
-{#        status: {{ vacation.status }}<br>#}
-{#        replacement employee: {{ vacation.vacation_replacement }}<br>#}
-{#          {% endfor %}#}
-{#        </p>#}
-{#    <a href="{% url 'detail-room' %}?id={{ room.id }} " class="btn btn-primary text-white">Go to</a>#}
-{#  </div>#}
-{#{% else %}#}
-{#    <div>#}
-{##}
-{#            <a href="{% url 'login' %}" class="nav-link px-0 align-middle">Please login</a>#}
-{##}
-{#    </div>#}
-{#    </div>#}
-{#{% endif %}#}
+<div class="card mt-5 border border-dark" style="width: auto;" >
+        <div class="card-body">
+        <h5 class="card-title">Your pending vacations:</h5>
+            {% for vacation in vacations_today %}
+        <p class="card-text">
+
+        from: {{ vacation.vacation_from }}<br>
+          to: {{ vacation.vacation_to }}<br>
+        status: {{ vacation.status }}<br>
+        replacement employee: {{ vacation.vacation_replacement }}<br>
+          {% endfor %}
+        </p>
+        </div>
+    </div>
+
+    <div class="card mt-5 border border-dark" style="width: auto;" >
+        <div class="card-body">
+        <h5 class="card-title">Hisorical vacations:</h5>
+            {% for vacation in vacations %}
+        <p class="card-text">
+
+        from: {{ vacation.vacation_from }}<br>
+          to: {{ vacation.vacation_to }}<br>
+        status: {{ vacation.status }}<br>
+        replacement employee: {{ vacation.vacation_replacement }}<br>
+          {% endfor %}
+        </p>
+        </div>
+    </div>
 {% endblock %}

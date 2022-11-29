@@ -26,7 +26,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/<str:username>', ProfileView.as_view(), name='profile'),
-    path('vacation-detail/<user_pk>', VacationDetailView.as_view(), name='vacation-detail'),
-    path('delegation-detail/<user_pk>', DelegationDetailView.as_view(), name='delegation-detail'),
+    path('vacation-detail/', VacationDetailView.as_view(), name='vacation-detail'),
+    path('delegation-detail/', DelegationDetailView.as_view(), name='delegation-detail'),
 
 ]

@@ -1,12 +1,13 @@
 from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm
-from office_tool_app.models import User
+from office_tool_app.models import User, Group
 
 
 class HomeView(View):
@@ -16,14 +17,16 @@ class HomeView(View):
         if user.is_authenticated:
             today = str(datetime.now().date())
             group = user.group
+            group_users = Group.objects.all()[0]
+            print(group_users.user_set)
+            print(group_users)
             address = user.address_set.all()
+            print(address)
             vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
-            print(user.vacation_replacement)
             messages = user.messages_to_employee.all().order_by('-sending_date')
             delegations = user.delegation_set.filter(status='pending').filter(start_date__gte=today)
 
             ctx = {
-                'user': user,
                 'group': group,
                 'address': address,
                 'vacations': vacations,
@@ -34,18 +37,28 @@ class HomeView(View):
         return render(request, "office_tool_app/Home.html", ctx)
 
 
-class VacationDetailView(View):
-    def get(self, request, user_pk):
+class VacationDetailView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        today = str(datetime.now().date())
+        vacations_today = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
+        vacations = user.vacation_employee.filter(vacation_from__lt=today)
         ctx = {
-
+            'vacations_today': vacations_today,
+            'vacations': vacations
         }
         return render(request, 'office_tool_app/vacationDetail.html', ctx)
 
 
-class DelegationDetailView(View):
-    def get(self, request, user_pk):
+class DelegationDetailView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        today = str(datetime.now().date())
+        delegations_today = user.delegation_set.filter(status='pending').filter(start_date__gte=today)
+        delegations = user.delegation_set.filter(start_date__lt=today)
         ctx = {
-
+            'delegations_today': delegations_today,
+            'delegations': delegations
         }
         return render(request, 'office_tool_app/delegationDetail.html', ctx)
 

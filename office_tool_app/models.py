@@ -54,9 +54,6 @@ class Messages(models.Model):
     sending_date = models.DateTimeField(auto_now_add=True, blank=True)
     message = models.TextField()
 
-    class Meta:
-        unique_together = ('from_employee', 'to_employee')
-
 
 class Delegation(models.Model):
     status_choice = (

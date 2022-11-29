@@ -3,7 +3,35 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-        <h1>Ala ma kota</h1>
+    <div class="card mt-5 border border-dark" style="width: auto;" >
+        <div class="card-body">
+        <h5 class="card-title">Your pending vacations:</h5>
+        <p class="card-text">
+        {% for vacation in vacations %}
+        from: {{ vacation.vacation_from }}<br>
+          to: {{ vacation.vacation_to }}<br>
+        status: {{ vacation.status }}<br>
+        replacement employee: {{ vacation.vacation_replacement }}<br>
+          {% endfor %}
+        </p>
+        <a href="{% url 'vacation-detail' user.pk %}" class="btn btn-primary text-white">Go to</a>
+        </div>
+    </div>
+
+    <div class="card mt-5 border border-dark" style="width: auto;" >
+        <div class="card-body">
+        <h5 class="card-title">Your pending delegations:</h5>
+        <p class="card-text">
+        {% for delegation in delegations %}
+        start date: {{ delegation.start_date }}<br>
+            end date: {{ delegation.end_date }}<br>
+        status: {{ delegation.status }}<br>
+        delegation country: {{ delegation.delegation_country }}<br>
+          {% endfor %}
+        </p>
+        <a href="{% url 'delegation-detail' user.pk %}" class="btn btn-primary text-white">Go to</a>
+        </div>
+    </div>
 {% else %}
     <div>
 

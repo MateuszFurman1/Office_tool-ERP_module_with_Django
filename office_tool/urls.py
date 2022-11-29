@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from office_tool_app.views import HomeView, RegistrationView, LoginView, LogoutView, ProfileView
+from office_tool_app.views import HomeView, RegistrationView, LoginView, LogoutView, ProfileView, VacationDetailView, \
+    DelegationDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +26,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/<str:username>', ProfileView.as_view(), name='profile'),
+    path('vacation-detail/<user_pk>', VacationDetailView.as_view(), name='vacation-detail'),
+    path('delegation-detail/<user_pk>', DelegationDetailView.as_view(), name='delegation-detail'),
 
 ]

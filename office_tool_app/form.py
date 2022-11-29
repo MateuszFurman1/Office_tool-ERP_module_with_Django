@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from office_tool_app.models import CustomUser, Group, Address, Vacation, Messages, Delegation
+from office_tool_app.models import User, Group, Address, Vacation, Messages, Delegation
 
 
 class LoginForm(forms.Form):
@@ -13,8 +13,8 @@ class RegistrationForm(forms.ModelForm):
     re_password = forms.CharField(max_length=128, widget=forms.PasswordInput)
 
     class Meta:
-        model = CustomUser
-        fields = ['first_name', 'last_name', 'pesel', 'birth_date', 'father_name',
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'pesel','email', 'birth_date', 'father_name',
                   'mother_name', 'family_name', 'group', 'position']
 
     def clean(self):
@@ -24,11 +24,10 @@ class RegistrationForm(forms.ModelForm):
 
 
 class UserUpdateForm(forms.ModelForm):
-    email = forms.EmailField()
 
     class Meta:
-        model = CustomUser
-        fields = ['first_name', 'last_name', 'pesel', 'birth_date', 'father_name',
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'pesel', 'email', 'birth_date', 'father_name',
                   'mother_name', 'family_name', 'group', 'position']
 
 

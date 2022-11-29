@@ -2,14 +2,14 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     pesel = models.PositiveIntegerField(null=True)
     birth_date = models.DateField(null=True)
-    father_name = models.CharField(max_length=100, null=True)
-    mother_name = models.CharField(max_length=100, null=True)
-    family_name = models.CharField(max_length=200, null=True)
-    group = models.ForeignKey('Group', on_delete=models.CASCADE, null=True)
-    position = models.CharField(max_length=200, null=True)
+    father_name = models.CharField(max_length=128, null=True)
+    mother_name = models.CharField(max_length=128, null=True)
+    family_name = models.CharField(max_length=128, null=True)
+    group = models.ForeignKey('Group', on_delete=models.CASCADE, null=True, blank=True)
+    position = models.CharField(max_length=128, null=True)
     updated = models.DateTimeField(auto_now=True, blank=True)
     joined = models.DateTimeField(auto_now_add=True, blank=True)
 
@@ -19,7 +19,7 @@ class Group(models.Model):
         ('manager', 'management'),
         ('employee', 'non-managerial employees'),
     )
-    name = models.CharField(max_length=100, choices=name_choice)
+    name = models.CharField(max_length=128, choices=name_choice)
 
 
 class Address(models.Model):
@@ -27,11 +27,11 @@ class Address(models.Model):
         ('home', 'home_address'),
         ('cor', 'correspondence_address'),
     )
-    employee = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    address_type = models.CharField(max_length=10, choices=address_choice)
-    city = models.CharField(max_length=100)
-    province = models.CharField(max_length=100)
-    country_region = models.CharField(max_length=100)
+    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    address_type = models.CharField(max_length=16, choices=address_choice)
+    city = models.CharField(max_length=128)
+    province = models.CharField(max_length=128)
+    country_region = models.CharField(max_length=128)
     postal_code = models.CharField(max_length=6)
 
 
@@ -41,19 +41,17 @@ class Vacation(models.Model):
         ('rejected', 'rejected_vacation'),
         ('pending', 'pending_application'),
     )
-    employee = models.ForeignKey(CustomUser, related_name="vacation_employee", on_delete=models.CASCADE)
-    replacement = models.ForeignKey(CustomUser, related_name="vacation_replacement", on_delete=models.CASCADE)
+    employee = models.ForeignKey(User, related_name="vacation_employee", on_delete=models.CASCADE)
+    replacement = models.ForeignKey(User, related_name="vacation_replacement", on_delete=models.CASCADE)
     vacation_from = models.DateField()
     vacation_to = models.DateField()
-    status = models.CharField(max_length=10, choices=status_choice)
-
-    class Meta:
-        unique_together = ('employee', 'replacement')
+    status = models.CharField(max_length=16, choices=status_choice)
 
 
 class Messages(models.Model):
-    from_employee = models.ForeignKey(CustomUser, related_name="messages_from_employee", on_delete=models.CASCADE)
-    to_employee = models.ForeignKey(CustomUser, related_name="messages_to_employee", on_delete=models.CASCADE)
+    from_employee = models.ForeignKey(User, related_name="messages_from_employee", on_delete=models.CASCADE)
+    to_employee = models.ForeignKey(User, related_name="messages_to_employee", on_delete=models.CASCADE)
+    sending_date = models.DateTimeField(auto_now_add=True, blank=True)
     message = models.TextField()
 
     class Meta:
@@ -62,8 +60,8 @@ class Messages(models.Model):
 
 class Delegation(models.Model):
     status_choice = (
-        ('accepted', 'accepted_vacation'),
-        ('rejected', 'rejected_vacation'),
+        ('accepted', 'accepted_delegation'),
+        ('rejected', 'rejected_delegation'),
         ('pending', 'pending_application'),
     )
     delegation_country_choice = (
@@ -74,8 +72,8 @@ class Delegation(models.Model):
         ('CZ', 'Czech_republic'),
         ('SL', 'Slovakia'),
     )
-    employee = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    employee = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     delegation_country = models.CharField(max_length=2, choices=delegation_country_choice)
-    status = models.CharField(max_length=10, choices=status_choice)
+    status = models.CharField(max_length=16, choices=status_choice)

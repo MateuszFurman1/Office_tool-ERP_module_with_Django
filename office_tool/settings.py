@@ -41,7 +41,11 @@ INSTALLED_APPS = [
     'office_tool_app',
 ]
 
-AUTH_USER_MODEL = 'office_tool_app.CustomUser'
+AUTH_USER_MODEL = 'office_tool_app.User'
+AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+    )
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

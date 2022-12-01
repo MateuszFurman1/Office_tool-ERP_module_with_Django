@@ -83,6 +83,3 @@ class MedicalLeave(models.Model):
     employee = models.ForeignKey(User, on_delete=models.CASCADE)
     from_date = models.DateField()
     to_date = models.DateField()
-
-    class Meta:
-        permissions = [('can_add_medical_leave', 'can add medical leave')]

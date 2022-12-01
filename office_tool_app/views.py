@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm
+from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm, AddressForm
 from office_tool_app.models import User, Group
 
 
@@ -133,8 +133,10 @@ class ProfileView(LoginRequiredMixin, View):
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
         form = UserUpdateForm(instance=user)
+        form_address = AddressForm(instance=user)
         ctx = {
             'form': form,
+            'form_address': form_address,
             'username': username
         }
         return render(request, "office_tool_app/profile.html", ctx)
@@ -157,9 +159,18 @@ class ManageView(PermissionRequiredMixin, View):
     permission_required = 'can_manage_employees'
 
     def get(self, request):
-        groups = Group.objects.all()
+        user = request.user
+        group_one = Group.objects.get(pk=1)
+        members_one = group_one.user_set
+        print(members_one)
+        group_two = Group.objects.get(pk=2)
+        members_two = group_one.user_set
+        print(members_two)
         ctx = {
-            'groups': groups
+            'group_one': group_one,
+            'members_one': members_one,
+            'group_two': group_two,
+            'members_two': members_two,
 
         }
         return render(request, 'office_tool_app/manage.html', ctx)

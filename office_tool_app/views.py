@@ -1,8 +1,6 @@
 from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -10,7 +8,9 @@ from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm
 from office_tool_app.models import User, Group
 
 
-class HomeView(View):
+class HomeView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
     def get(self, request):
         user = request.user
         ctx = {}
@@ -38,6 +38,8 @@ class HomeView(View):
 
 
 class VacationDetailView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
     def get(self, request):
         user = request.user
         today = str(datetime.now().date())
@@ -51,6 +53,8 @@ class VacationDetailView(LoginRequiredMixin, View):
 
 
 class DelegationDetailView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
     def get(self, request):
         user = request.user
         today = str(datetime.now().date())
@@ -110,9 +114,9 @@ class LoginView(View):
                 return redirect('home')
             else:
                 messages.error(request, "Wrong name/password!")
-                ctx = {
-                    "form": form
-                }
+        ctx = {
+            "form": form
+        }
         return render(request, 'office_tool_app/form.html', ctx)
 
 
@@ -123,10 +127,10 @@ class LogoutView(View):
         return redirect('login')
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class ProfileView(View):
-    def get(self, request, username):
+class ProfileView(LoginRequiredMixin, View):
+    login_url = "/login/"
 
+    def get(self, request, username):
         user = get_object_or_404(User, username=username)
         form = UserUpdateForm(instance=user)
         ctx = {
@@ -147,3 +151,28 @@ class ProfileView(View):
             return redirect('profile', user.username)
         messages.error(request, "Something goes wrong")
         return render(request, 'office_tool_app/profile.html', ctx)
+
+
+class ManageView(PermissionRequiredMixin, View):
+    permission_required = 'can_manage_employees'
+
+    def get(self, request):
+        groups = Group.objects.all()
+        ctx = {
+            'groups': groups
+
+        }
+        return render(request, 'office_tool_app/manage.html', ctx)
+
+
+class MedicalLeaveView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
+    def get(self, request):
+        user = request.user
+        medicals = user.medicalleave_set.all()
+        ctx = {
+            'medicals': medicals
+
+        }
+        return render(request, 'office_tool_app/MedicalLeave.html', ctx)

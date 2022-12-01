@@ -13,6 +13,9 @@ class User(AbstractUser):
     updated = models.DateTimeField(auto_now=True, blank=True)
     joined = models.DateTimeField(auto_now_add=True, blank=True)
 
+    class Meta:
+        permissions = [('can_manage_employees', 'can manage employees')]
+
 
 class Group(models.Model):
     name_choice = (
@@ -74,3 +77,12 @@ class Delegation(models.Model):
     end_date = models.DateField()
     delegation_country = models.CharField(max_length=2, choices=delegation_country_choice)
     status = models.CharField(max_length=16, choices=status_choice)
+
+
+class MedicalLeave(models.Model):
+    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    from_date = models.DateField()
+    to_date = models.DateField()
+
+    class Meta:
+        permissions = [('can_add_medical_leave', 'can add medical leave')]

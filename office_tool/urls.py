@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from office_tool_app.views import HomeView, RegistrationView, LoginView, LogoutView, ProfileView, VacationDetailView, \
-    DelegationDetailView
+    DelegationDetailView, ManageView, MedicalLeaveView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,5 +28,6 @@ urlpatterns = [
     path('profile/<str:username>', ProfileView.as_view(), name='profile'),
     path('vacation-detail/', VacationDetailView.as_view(), name='vacation-detail'),
     path('delegation-detail/', DelegationDetailView.as_view(), name='delegation-detail'),
-
+    path('manage/', ManageView.as_view(), name='manage'),
+    path('medical-leave/', MedicalLeaveView.as_view(), name='medical-leave'),
 ]

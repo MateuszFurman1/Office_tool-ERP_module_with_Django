@@ -5,12 +5,9 @@
     <div class="card mt-5 border border-dark" style="width: auto;" >
         <div class="card-body">
         <h5 class="card-title">Your group members:</h5>
-            {% for group in group %}
         <p class="card-text">
-               <h6> Group name: {{ group.name }} <br></h6>
-        Group members: {{ group.set_user }}<br>
-
-          {% endfor %}
+               <h6> Group name: {{ group_one.name }} <br></h6>
+        Group members: {{ members_one.first_name }}<br>
         </p>
        </div>
     </div>

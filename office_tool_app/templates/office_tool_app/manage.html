@@ -1,0 +1,31 @@
+{% extends "office_tool_app/Base2col.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card mt-5 border border-dark" style="width: auto;" >
+        <div class="card-body">
+        <h5 class="card-title">Your group members:</h5>
+            {% for group in group %}
+        <p class="card-text">
+               <h6> Group name: {{ group.name }} <br></h6>
+        Group members: {{ group.set_user }}<br>
+
+          {% endfor %}
+        </p>
+       </div>
+    </div>
+
+{#    <div class="card mt-5 border border-dark" style="width: auto;" >#}
+{#        <div class="card-body">#}
+{#        <h5 class="card-title">Historical delegations:</h5>#}
+{#            {% for delegation in delegations %}#}
+{#        <p class="card-text">#}
+{#               <h6> Delegation to: {{ delegation.delegation_country }} <br></h6>#}
+{#        start date: {{ delegation.start_date }}<br>#}
+{#            end date: {{ delegation.end_date }}<br>#}
+{#        status: {{ delegation.status }}<br>#}
+{#          {% endfor %}#}
+{#        </p>#}
+{#        </div>#}
+{#    </div>#}
+{% endblock %}

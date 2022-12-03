@@ -30,7 +30,7 @@ class Address(models.Model):
         ('home', 'home_address'),
         ('cor', 'correspondence_address'),
     )
-    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(User, related_name="address_employee", on_delete=models.CASCADE)
     address_type = models.CharField(max_length=16, choices=address_choice)
     city = models.CharField(max_length=128)
     province = models.CharField(max_length=128)
@@ -72,7 +72,7 @@ class Delegation(models.Model):
         ('CZ', 'Czech_republic'),
         ('SL', 'Slovakia'),
     )
-    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(User, related_name="delegation_employee", on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     delegation_country = models.CharField(max_length=2, choices=delegation_country_choice)

@@ -37,7 +37,10 @@
         <div class="card-body">
         <h5 class="card-title">People on vacation from your team:</h5>
         <p class="card-text">
+            {% for user in group_users %}
+            <li>{{ user.first_name }}</li>
 
+            {% endfor %}
         </p>
         <a href="{% url 'delegation-detail' %}" class="btn btn-primary text-white">Go to</a>
         </div>

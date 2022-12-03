@@ -17,17 +17,17 @@ class HomeView(LoginRequiredMixin, View):
         if user.is_authenticated:
             today = str(datetime.now().date())
             group = user.group
-            group_users = Group.objects.all()[0]
-            print(group_users.user_set)
+            group_users = group.user_set.all()
             print(group_users)
-            address = user.address_set.all()
+            group_users2 = User.objects.filter(group=group)
+            address = user.address_employee.all()
             print(address)
             vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
             messages = user.messages_to_employee.all().order_by('-sending_date')
-            delegations = user.delegation_set.filter(status='pending').filter(start_date__gte=today)
+            delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
 
             ctx = {
-                'group': group,
+                'group_users': group_users,
                 'address': address,
                 'vacations': vacations,
                 'messages': messages,
@@ -58,8 +58,8 @@ class DelegationDetailView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         today = str(datetime.now().date())
-        delegations_today = user.delegation_set.filter(status='pending').filter(start_date__gte=today)
-        delegations = user.delegation_set.filter(start_date__lt=today)
+        delegations_today = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
+        delegations = user.delegation_employee.filter(start_date__lt=today)
         ctx = {
             'delegations_today': delegations_today,
             'delegations': delegations
@@ -114,10 +114,10 @@ class LoginView(View):
                 return redirect('home')
             else:
                 messages.error(request, "Wrong name/password!")
-        ctx = {
-            "form": form
-        }
-        return render(request, 'office_tool_app/form.html', ctx)
+                ctx = {
+                    "form": form
+                    }
+                return render(request, 'office_tool_app/form.html', ctx)
 
 
 class LogoutView(View):
@@ -133,7 +133,7 @@ class ProfileView(LoginRequiredMixin, View):
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
         form = UserUpdateForm(instance=user)
-        form_address = AddressForm(instance=user)
+        form_address = AddressForm(instance=user.address_employee.get(address_type='home'))
         ctx = {
             'form': form,
             'form_address': form_address,

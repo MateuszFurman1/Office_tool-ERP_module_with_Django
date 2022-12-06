@@ -4,8 +4,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm, AddressForm
-from office_tool_app.models import User, Group
+from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm, AddressHomeForm, \
+    AddressCoreForm
+from office_tool_app.models import User, Group, AddressHome, AddressCore
 
 
 class HomeView(LoginRequiredMixin, View):
@@ -20,15 +21,12 @@ class HomeView(LoginRequiredMixin, View):
             group_users = group.user_set.all()
             print(group_users)
             group_users2 = User.objects.filter(group=group)
-            address = user.address_employee.all()
-            print(address)
             vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
             messages = user.messages_to_employee.all().order_by('-sending_date')
             delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
 
             ctx = {
                 'group_users': group_users,
-                'address': address,
                 'vacations': vacations,
                 'messages': messages,
                 'delegations': delegations,
@@ -123,7 +121,7 @@ class LoginView(View):
 class LogoutView(View):
     def get(self, request):
         logout(request)
-        messages.info(request, "Logout successfully")
+        messages.success(request, "Logout successfully")
         return redirect('login')
 
 
@@ -133,10 +131,14 @@ class ProfileView(LoginRequiredMixin, View):
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
         form = UserUpdateForm(instance=user)
-        form_address = AddressForm(instance=user.address_employee.get(address_type='home'))
+        address_home = AddressHome.objects.filter(employee=user)
+        address_core = AddressCore.objects.filter(employee=user)
+        form_home = AddressHomeForm(instance=address_home[0])
+        form_core = AddressCoreForm(instance=address_core[0])
         ctx = {
             'form': form,
-            'form_address': form_address,
+            'form_home': form_home,
+            'form_core': form_core,
             'username': username
         }
         return render(request, "office_tool_app/profile.html", ctx)

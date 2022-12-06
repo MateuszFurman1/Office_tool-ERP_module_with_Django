@@ -25,13 +25,16 @@ class Group(models.Model):
     name = models.CharField(max_length=128, choices=name_choice)
 
 
-class Address(models.Model):
-    address_choice = (
-        ('home', 'home_address'),
-        ('cor', 'correspondence_address'),
-    )
-    employee = models.ForeignKey(User, related_name="address_employee", on_delete=models.CASCADE)
-    address_type = models.CharField(max_length=16, choices=address_choice)
+class AddressHome(models.Model):
+    employee = models.OneToOneField(User, related_name="address_home_employee", on_delete=models.CASCADE)
+    city = models.CharField(max_length=128)
+    province = models.CharField(max_length=128)
+    country_region = models.CharField(max_length=128)
+    postal_code = models.CharField(max_length=6)
+
+
+class AddressCore(models.Model):
+    employee = models.OneToOneField(User, related_name="address_core_employee", on_delete=models.CASCADE)
     city = models.CharField(max_length=128)
     province = models.CharField(max_length=128)
     country_region = models.CharField(max_length=128)

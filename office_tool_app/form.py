@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from office_tool_app.models import User, Group, Address, Vacation, Messages, Delegation
+from office_tool_app.models import User, Group, Vacation, Messages, Delegation, AddressCore, AddressHome
 
 
 class LoginForm(forms.Form):
@@ -38,11 +38,18 @@ class GroupForm(forms.ModelForm):
         fields = '__all__'
 
 
-class AddressForm(forms.ModelForm):
+class AddressHomeForm(forms.ModelForm):
 
     class Meta:
-        model = Address
-        fields = '__all__'
+        model = AddressHome
+        exclude = ('employee',)
+
+
+class AddressCoreForm(forms.ModelForm):
+
+    class Meta:
+        model = AddressCore
+        exclude = ('employee',)
 
 
 class VacationForm(forms.ModelForm):

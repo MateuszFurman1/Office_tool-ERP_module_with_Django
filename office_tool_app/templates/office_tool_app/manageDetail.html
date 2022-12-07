@@ -39,7 +39,8 @@
                <h6> Group name: {{ group_two.name }} <br></h6>
         Group members: <br>
             {% for user in group_two_users %}
-            <li>{{ user }}</li>
+                <li><a href="{% url 'manage-detail' user.username %}">
+                    {{ user }}</a></li>
             {% endfor %}
         </p>
        </div>

@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from office_tool_app.models import User, Group, Vacation, Messages, Delegation, AddressCore, AddressHome
+from office_tool_app.models import User, Group, Vacation, Messages, Delegation, AddressCore, AddressHome, MedicalLeave
 
 
 class LoginForm(forms.Form):
@@ -56,7 +56,7 @@ class VacationForm(forms.ModelForm):
 
     class Meta:
         model = Vacation
-        fields = '__all__'
+        exclude = ('employee', 'status',)
 
 
 class MessagesForm(forms.ModelForm):
@@ -70,4 +70,11 @@ class DelegationForm(forms.ModelForm):
 
     class Meta:
         model = Delegation
-        fields = '__all__'
+        exclude = ('employee', 'status',)
+
+
+class MedicalLeaveForm(forms.ModelForm):
+
+    class Meta:
+        model = MedicalLeave
+        exclude = ('employee',)

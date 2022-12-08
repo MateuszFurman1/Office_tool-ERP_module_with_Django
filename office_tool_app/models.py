@@ -83,6 +83,6 @@ class Delegation(models.Model):
 
 
 class MedicalLeave(models.Model):
-    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(User, related_name="medical_employee", on_delete=models.CASCADE)
     from_date = models.DateField()
     to_date = models.DateField()

@@ -11,7 +11,11 @@
         start date: {{ delegation.start_date }}<br>
             end date: {{ delegation.end_date }}<br>
         status: {{ delegation.status }}<br>
+                <a href="{% url 'delete-delegation' delegation.pk %}" class="btn btn-primary text-white">Delete</a>
+
           {% endfor %}
+        <br>
+
         </p>
        </div>
     </div>
@@ -29,4 +33,7 @@
         </p>
         </div>
     </div>
+<br>
+                <a href="{% url 'create-delegation' %}" class="btn btn-primary text-white">Create new</a>
+
 {% endblock %}

@@ -12,7 +12,9 @@
           to: {{ vacation.vacation_to }}<br>
         status: {{ vacation.status }}<br>
         replacement employee: {{ vacation.replacement }}<br>
+                <a href="{% url 'delete-vacation' vacation.pk %}" class="btn btn-primary text-white">Delete</a>
           {% endfor %}
+
         </p>
         </div>
     </div>
@@ -31,4 +33,7 @@
         </p>
         </div>
     </div>
+<br>
+    <a href="{% url 'create-vacation' %}" class="btn btn-primary text-white">Create new</a>
+
 {% endblock %}

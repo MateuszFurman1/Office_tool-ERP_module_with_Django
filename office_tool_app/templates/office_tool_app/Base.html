@@ -34,10 +34,10 @@
                         <a href="{% url 'medical-leave' %}" class="nav-link px-0 align-middle text-white">
                             <i class="fs-4 bi-bootstrap"></i> <span class="ms-1 d-none d-sm-inline">Medical leave</span></a>
                     </li>
-                    <li>
-                        <a href="#submenu3" class="nav-link px-0 align-middle text-white">
-                            <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline text-white">Calendar</span> </a>
-                    </li>
+{#                    <li>#}
+{#                        <a href="#submenu3" class="nav-link px-0 align-middle text-white">#}
+{#                            <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline text-white">Calendar</span> </a>#}
+{#                    </li>#}
                     {% if user.is_authenticated %}
                     <li>
                         <a href="{% url 'logout' %}" class="nav-link px-0 align-middle">
@@ -45,7 +45,7 @@
                     </li>
                     <li>
                         <a href="{% url 'profile' user.username %}" class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline text-white">{{ user.username }} profile</span> </a>
+                            <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline text-white">Profile</span> </a>
                     </li>
                         {% if perms.office_tool_app.can_manage_employees %}
                     <li>

@@ -1,12 +1,17 @@
 from datetime import datetime
+
+import vacation as vacation
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.urls import reverse_lazy
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.views.generic import DeleteView
+
 from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm, AddressHomeForm, \
-    AddressCoreForm
-from office_tool_app.models import User, Group, AddressHome, AddressCore, Vacation, Delegation
+    AddressCoreForm, MedicalLeaveForm, DelegationForm, VacationForm
+from office_tool_app.models import User, Group, AddressHome, AddressCore, Vacation, Delegation, MedicalLeave
 
 
 class HomeView(LoginRequiredMixin, View):
@@ -19,7 +24,6 @@ class HomeView(LoginRequiredMixin, View):
             today = str(datetime.now().date())
             group = user.group
             group_users = group.user_set.all()
-            print(group_users)
             # group_users2 = User.objects.filter(group=group)
             vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
             messages = user.messages_to_employee.all().order_by('-sending_date')
@@ -33,36 +37,6 @@ class HomeView(LoginRequiredMixin, View):
             }
 
         return render(request, "office_tool_app/Home.html", ctx)
-
-
-class VacationDetailView(LoginRequiredMixin, View):
-    login_url = "/login/"
-
-    def get(self, request):
-        user = request.user
-        today = str(datetime.now().date())
-        vacations_today = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
-        vacations = user.vacation_employee.filter(vacation_from__lt=today)
-        ctx = {
-            'vacations_today': vacations_today,
-            'vacations': vacations
-        }
-        return render(request, 'office_tool_app/vacationDetail.html', ctx)
-
-
-class DelegationDetailView(LoginRequiredMixin, View):
-    login_url = "/login/"
-
-    def get(self, request):
-        user = request.user
-        today = str(datetime.now().date())
-        delegations_today = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
-        delegations = user.delegation_employee.filter(start_date__lt=today)
-        ctx = {
-            'delegations_today': delegations_today,
-            'delegations': delegations
-        }
-        return render(request, 'office_tool_app/delegationDetail.html', ctx)
 
 
 class RegistrationView(View):
@@ -163,17 +137,178 @@ class ProfileView(LoginRequiredMixin, View):
         return render(request, 'office_tool_app/profile.html', ctx)
 
 
+class VacationDetailView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
+    def get(self, request):
+        user = request.user
+        today = str(datetime.now().date())
+        vacations_today = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
+        vacations = user.vacation_employee.filter(vacation_from__lt=today)
+        ctx = {
+            'vacations_today': vacations_today,
+            'vacations': vacations
+        }
+        return render(request, 'office_tool_app/vacationDetail.html', ctx)
+
+
+class VacationCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        form = VacationForm()
+        ctx = {
+            'form': form,
+            'user': user,
+        }
+        return render(request, 'office_tool_app/form2.html', ctx)
+
+    def post(self, request):
+        user = request.user
+        form = VacationForm(request.POST)
+        if form.is_valid():
+            vacation = form.save(commit=False)
+            vacation.employee = user
+            vacation.status = 'pending'
+            vacation.save()
+            return redirect('vacation-detail')
+
+
+class VacationDeleteView(LoginRequiredMixin, DeleteView):
+    model = Vacation
+    success_url = reverse_lazy("vacation-detail")
+
+
+class VacationAcceptView(PermissionRequiredMixin, View):
+    permission_required = 'can_manage_employees'
+
+    def post(self, request, pk):
+        vacation = Vacation.objects.get(id=pk)
+        vacation.status = 'accepted'
+        vacation.save()
+        user = vacation.employee
+        print(user)
+        today = str(datetime.now().date())
+
+        return redirect('manage-detail', user.username)
+
+
+class VacationRejectView(PermissionRequiredMixin, View):
+    permission_required = 'can_manage_employees'
+
+    def post(self, request, pk):
+        vacation = Vacation.objects.get(id=pk)
+        vacation.status = 'accepted'
+        vacation.save()
+        user = vacation.employee
+        print(user)
+        return redirect('manage-detail', user.username)
+
+
+class DelegationDetailView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
+    def get(self, request):
+        user = request.user
+        today = str(datetime.now().date())
+        delegations_today = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
+        delegations = user.delegation_employee.filter(start_date__lt=today)
+        ctx = {
+            'delegations_today': delegations_today,
+            'delegations': delegations
+        }
+        return render(request, 'office_tool_app/delegationDetail.html', ctx)
+
+
+class DelegationCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        form = DelegationForm()
+        ctx = {
+            'form': form,
+            'user': user,
+        }
+        return render(request, 'office_tool_app/form2.html', ctx)
+
+    def post(self, request):
+        user = request.user
+        form = DelegationForm(request.POST)
+        if form.is_valid():
+            delegation = form.save(commit=False)
+            delegation.employee = user
+            delegation.status = 'pending'
+            delegation.save()
+            return redirect('delegation-detail')
+
+
+class DelegationDeleteView(LoginRequiredMixin, DeleteView):
+    model = Delegation
+    success_url = reverse_lazy("delegation-detail")
+
+
+class DelegationAcceptView(PermissionRequiredMixin, View):
+    permission_required = 'can_manage_employees'
+
+    def post(self, request, pk):
+
+        delegation = Delegation.objects.get(id=pk)
+        delegation.status = 'accepted'
+        delegation.save()
+        user = delegation.employee
+        print(user)
+        return redirect('manage-detail', user.username)
+
+
+class DelegationRejectView(PermissionRequiredMixin, View):
+    permission_required = 'can_manage_employees'
+
+    def post(self, request, pk):
+
+        delegation = Delegation.objects.get(id=pk)
+        delegation.status = 'rejected'
+        delegation.save()
+        user = delegation.employee
+        print(user)
+        return redirect('manage-detail', user.username)
+
+
 class MedicalLeaveView(LoginRequiredMixin, View):
     login_url = "/login/"
 
     def get(self, request):
         user = request.user
-        medicals = user.medicalleave_set.all()
+        medicals = user.medical_employee.all()
         ctx = {
             'medicals': medicals
 
         }
         return render(request, 'office_tool_app/MedicalLeave.html', ctx)
+
+
+class MedicalLeaveCreateView(PermissionRequiredMixin, View):
+    permission_required = 'can_manage_employees'
+
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        form = MedicalLeaveForm()
+        ctx = {
+            "form": form,
+            'user': user,
+        }
+        return render(request, "office_tool_app/form2.html", ctx)
+
+    def post(self, request, username):
+        user = User.objects.get(username=username)
+        form = MedicalLeaveForm(request.POST)
+        if form.is_valid():
+            medical_leave = form.save(commit=False)
+            medical_leave.employee = user
+            medical_leave.save()
+            return redirect('manage-detail', user.username)
+
+
+class MedicalDeleteView(LoginRequiredMixin, DeleteView):
+    model = MedicalLeave
+    success_url = reverse_lazy("medical-leave")
 
 
 class ManageView(PermissionRequiredMixin, View):
@@ -195,7 +330,7 @@ class ManageView(PermissionRequiredMixin, View):
             'group_two_users': group_two_users,
             'vacations': vacations,
             'delegations': delegations,
-
+            'user': user,
         }
         return render(request, 'office_tool_app/manage.html', ctx)
 
@@ -205,7 +340,20 @@ class ManageDetailView(PermissionRequiredMixin, View):
 
     def get(self, request, username):
         user = User.objects.get(username=username)
-        ctx = {
+        today = str(datetime.now().date())
+        group = user.group
+        group_users = group.user_set.all()
+        medicals = user.medical_employee.all()
+        vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
+        messages = user.messages_to_employee.all().order_by('-sending_date')
+        delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
 
+        ctx = {
+            'group_users': group_users,
+            'vacations': vacations,
+            'messages': messages,
+            'delegations': delegations,
+            'medicals': medicals,
+            'user': user,
         }
         return render(request, 'office_tool_app/manageDetail.html', ctx)

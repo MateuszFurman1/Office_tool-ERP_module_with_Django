@@ -27,7 +27,6 @@
                 <li>{{ delegation.employee }}</li>
                         {% endfor %}
         </ul>
-
         </p>
        </div>
     </div>
@@ -36,8 +35,6 @@
         <div class="card-body">
         <h5 class="card-title">Your subordinates members:</h5>
         <p class="card-text">
-               <h6> Group name: {{ group_two.name }} <br></h6>
-        Group members: <br>
             {% for user in group_two_users %}
                 <li><a href="{% url 'manage-detail' user.username %}">
                     {{ user }}</a></li>

@@ -11,7 +11,7 @@ from django.views.generic import DeleteView
 
 from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm, AddressHomeForm, \
     AddressCoreForm, MedicalLeaveForm, DelegationForm, VacationForm
-from office_tool_app.models import User, Group, AddressHome, AddressCore, Vacation, Delegation, MedicalLeave
+from office_tool_app.models import User, Group, AddressHome, AddressCore, Vacation, Delegation, MedicalLeave, Messages
 
 
 class HomeView(LoginRequiredMixin, View):
@@ -88,7 +88,7 @@ class LoginView(View):
                 messages.error(request, "Wrong name/password!")
                 ctx = {
                     "form": form
-                    }
+                }
                 return render(request, 'office_tool_app/form.html', ctx)
 
 
@@ -182,27 +182,54 @@ class VacationDeleteView(LoginRequiredMixin, DeleteView):
 class VacationAcceptView(PermissionRequiredMixin, View):
     permission_required = 'can_manage_employees'
 
+    def get(self, request, pk):
+        vacation = get_object_or_404(Vacation, pk=pk)
+        user = vacation.employee
+        ctx = {
+            "vacation": vacation,
+            'user': user,
+        }
+        return render(request, "office_tool_app/vacation_confirm_accept.html", ctx)
+
     def post(self, request, pk):
         vacation = Vacation.objects.get(id=pk)
         vacation.status = 'accepted'
         vacation.save()
-        user = vacation.employee
-        print(user)
+        user_reciver = vacation.employee
+        user_sender = request.user
         today = str(datetime.now().date())
+        message = f"Your vacation from: {vacation.vacation_from} to {vacation.vacation_to} has been accepted by " \
+                  f"{user_sender}"
+        Messages.objects.create(from_employee=user_sender, to_employee=user_reciver, sending_date=today,
+                                message=message)
 
-        return redirect('manage-detail', user.username)
+        return redirect('manage-detail', user_reciver.username)
 
 
 class VacationRejectView(PermissionRequiredMixin, View):
     permission_required = 'can_manage_employees'
 
+    def get(self, request, pk):
+        vacation = get_object_or_404(Vacation, pk=pk)
+        user = vacation.employee
+        ctx = {
+            "vacation": vacation,
+            'user': user,
+        }
+        return render(request, "office_tool_app/vacation_confirm_accept.html", ctx)
+
     def post(self, request, pk):
         vacation = Vacation.objects.get(id=pk)
         vacation.status = 'accepted'
         vacation.save()
-        user = vacation.employee
-        print(user)
-        return redirect('manage-detail', user.username)
+        user_reciver = vacation.employee
+        user_sender = request.user
+        today = str(datetime.now().date())
+        message = f"Your vacation from: {vacation.vacation_from} to {vacation.vacation_to} has been rejected by " \
+                  f"{user_sender}"
+        Messages.objects.create(from_employee=user_sender, to_employee=user_reciver, sending_date=today,
+                                message=message)
+        return redirect('manage-detail', user_reciver.username)
 
 
 class DelegationDetailView(LoginRequiredMixin, View):
@@ -248,8 +275,9 @@ class DelegationDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("delegation-detail")
 
 
-class DelegationAcceptView(LoginRequiredMixin, View):
-    # permission_required = 'can_manage_employees'
+class DelegationAcceptView(PermissionRequiredMixin, View):
+    permission_required = 'can_manage_employees'
+
     def get(self, request, pk):
         delegation = get_object_or_404(Delegation, pk=pk)
         user = delegation.employee
@@ -260,17 +288,23 @@ class DelegationAcceptView(LoginRequiredMixin, View):
         return render(request, "office_tool_app/delegation_confirm_accept.html", ctx)
 
     def post(self, request, pk):
-
         delegation = Delegation.objects.get(id=pk)
         delegation.status = 'accepted'
         delegation.save()
-        user = delegation.employee
-        print(user)
-        return redirect('manage-detail', user.username)
+        user_reciver = delegation.employee
+        user_sender = request.user
+        today = str(datetime.now().date())
+        message = f"Your delegation from: {delegation.start_date} to {delegation.end_date} to " \
+                  f"{delegation.delegation_country} has been accepted by " \
+                  f"{user_sender}"
+        Messages.objects.create(from_employee=user_sender, to_employee=user_reciver, sending_date=today,
+                                message=message)
+        return redirect('manage-detail', user_reciver.username)
 
 
-class DelegationRejectView(LoginRequiredMixin, View):
-    # permission_required = 'can_manage_employees'
+class DelegationRejectView(PermissionRequiredMixin, View):
+    permission_required = 'can_manage_employees'
+
     def get(self, request, pk):
         delegation = get_object_or_404(Delegation, pk=pk)
         user = delegation.employee
@@ -281,13 +315,18 @@ class DelegationRejectView(LoginRequiredMixin, View):
         return render(request, "office_tool_app/delegation_confirm_accept.html", ctx)
 
     def post(self, request, pk):
-
         delegation = Delegation.objects.get(id=pk)
         delegation.status = 'rejected'
         delegation.save()
-        user = delegation.employee
-        print(user)
-        return redirect('manage-detail', user.username)
+        user_reciver = delegation.employee
+        user_sender = request.user
+        today = str(datetime.now().date())
+        message = f"Your delegation from: {delegation.start_date} to {delegation.end_date} to " \
+                  f"{delegation.delegation_country} has been rejected by " \
+                  f"{user_sender}"
+        Messages.objects.create(from_employee=user_sender, to_employee=user_reciver, sending_date=today,
+                                message=message)
+        return redirect('manage-detail', user_reciver.username)
 
 
 class MedicalLeaveView(LoginRequiredMixin, View):
@@ -355,7 +394,15 @@ class ManageView(PermissionRequiredMixin, View):
         group_two = Group.objects.get(pk=2)
         group_two_users = group_two.user_set.all()
         vacations = Vacation.objects.all().filter(employee__group=group_two).filter(vacation_from__gte=today)
+        vacations_list = []
+        for i in vacations:
+            if i.employee not in vacations_list:
+                vacations_list.append(i.employee)
         delegations = Delegation.objects.all().filter(employee__group=group_two).filter(start_date__gte=today)
+        delegations_list = []
+        for i in delegations:
+            if i.employee not in delegations_list:
+                delegations_list.append(i.employee)
         ctx = {
             'group_one': group_one,
             'group_one_users': group_one_users,
@@ -364,6 +411,9 @@ class ManageView(PermissionRequiredMixin, View):
             'vacations': vacations,
             'delegations': delegations,
             'user': user,
+            'delegations_list': delegations_list,
+            'vacations_list': vacations_list,
+
         }
         return render(request, 'office_tool_app/manage.html', ctx)
 

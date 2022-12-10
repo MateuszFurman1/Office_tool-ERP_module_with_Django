@@ -1,12 +1,66 @@
-from datetime import datetime, date
-
+from datetime import date
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
 
-from booking_rooms_app.form import RoomForm, ReservationForm, LoginForm, RegistrationForm, CommentForm, UserUpdateForm
-from booking_rooms_app.models import Room, Reservation, Comment
+from office_tool_app.form import RegistrationForm
+
+
+@pytest.mark.django_db
+def test_Home_view(user):
+    client = Client()
+    client.force_login(user)
+    url = reverse('home')
+    response = client.get(url)
+    assert response.status_code == 200
+    # persons_context = response.context['rooms']
+    # assert persons_context.count() == len(rooms)
+    # for p in rooms:
+    #     assert p in persons_context
+
+
+@pytest.mark.django_db
+def test_registration_get_view():
+    client = Client()
+    url = reverse('registration')
+    response = client.get(url)
+    assert 200 == response.status_code
+    assert isinstance(response.context['form'], RegistrationForm)
+
+
+@pytest.mark.django_db
+def test_registration_post_valid_view():
+    data = {
+        'username': 'name1',
+        'first_name': 'test',
+        'last_name': 'test',
+        'email'
+        'pesel': '2147483647',
+        'password': 'asd',
+        're_password': 'asd'
+    }
+    client = Client()
+    url = reverse('registration')
+    response = client.post(url, data)
+    assert 302 == response.status_code
+    assert User.objects.get(username='name1')
+
+
+@pytest.mark.django_db
+def test_registration_post_invalid_view():
+    data = {
+        'username': 'name1',
+        'password': 'asd',
+        're_password': '111'
+    }
+    client = Client()  # otwieramt przeglądarkę
+    url = reverse('registration')  # mówimy na jaki url chcemy wejsc
+    response = client.post(url, data)  # wchodzimu na url
+    assert 200 == response.status_code
+    assert len(User.objects.all()) == 0
+    # albo funkcją count()
+    assert isinstance(response.context['form'], RegistrationForm)
 
 
 @pytest.mark.django_db
@@ -34,15 +88,7 @@ def test_create_room_post_view_with_log(user):
     assert Room.objects.get(name='room', seats=100, projector=False)
 
 
-@pytest.mark.django_db
-def test_Allrooms_view(rooms):
-    client = Client()  # otwieramt przeglądarkę
-    url = reverse('all-rooms')  # mówimy na jaki url chcemy wejsc
-    response = client.get(url)  # wchodzimu na url
-    persons_context = response.context['rooms']
-    assert persons_context.count() == len(rooms)
-    for p in rooms:
-        assert p in persons_context
+
 
 
 @pytest.mark.django_db

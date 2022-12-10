@@ -6,7 +6,7 @@
 <div>
 <form action="" class="form-label text-center" method="POST">
     {% csrf_token %}
-    <p>Are you sure you want to delete ?</p>
+    <p>Are you sure you want to process ?</p>
     {{ form }}
     <input type="submit" value="Confirm" class="btn btn-primary">
     <a href="{% url 'manage-detail' user.username %}" class="btn btn-primary">Cancel</a>

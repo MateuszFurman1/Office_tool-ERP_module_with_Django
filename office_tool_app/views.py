@@ -102,8 +102,8 @@ class LogoutView(View):
 class ProfileView(LoginRequiredMixin, View):
     login_url = "/login/"
 
-    def get(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def get(self, request):
+        user = request.user
         form = UserUpdateForm(instance=user)
         address_home = AddressHome.objects.filter(employee=user)
         address_core = AddressCore.objects.filter(employee=user)
@@ -119,12 +119,11 @@ class ProfileView(LoginRequiredMixin, View):
             'form': form,
             'form_home': form_home,
             'form_core': form_core,
-            'username': username
         }
         return render(request, "office_tool_app/profile.html", ctx)
 
-    def post(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def post(self, request):
+        user = request.user
         form = UserUpdateForm(request.POST, instance=user)
         ctx = {
             'form': form
@@ -132,7 +131,7 @@ class ProfileView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             messages.success(request, f"Your profile has been updated!")
-            return redirect('profile', user.username)
+            return redirect('profile')
         messages.error(request, "Something goes wrong")
         return render(request, 'office_tool_app/profile.html', ctx)
 
@@ -144,10 +143,12 @@ class VacationDetailView(LoginRequiredMixin, View):
         user = request.user
         today = str(datetime.now().date())
         vacations_today = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
-        vacations = user.vacation_employee.filter(vacation_from__lt=today)
+        vacations_past = user.vacation_employee.filter(status='accepted').filter(vacation_from__lte=today)
+        vacations_future = user.vacation_employee.filter(status='accepted').filter(vacation_from__gt=today)
         ctx = {
             'vacations_today': vacations_today,
-            'vacations': vacations
+            'vacations_past': vacations_past,
+            'vacations_future': vacations_future,
         }
         return render(request, 'office_tool_app/vacationDetail.html', ctx)
 
@@ -211,10 +212,12 @@ class DelegationDetailView(LoginRequiredMixin, View):
         user = request.user
         today = str(datetime.now().date())
         delegations_today = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
-        delegations = user.delegation_employee.filter(start_date__lt=today)
+        delegations_past = user.delegation_employee.filter(status='accepted').filter(start_date__lte=today)
+        delegations_future = user.delegation_employee.filter(status='accepted').filter(start_date__gt=today)
         ctx = {
             'delegations_today': delegations_today,
-            'delegations': delegations
+            'delegations_past': delegations_past,
+            'delegations_future': delegations_future,
         }
         return render(request, 'office_tool_app/delegationDetail.html', ctx)
 
@@ -245,8 +248,16 @@ class DelegationDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("delegation-detail")
 
 
-class DelegationAcceptView(PermissionRequiredMixin, View):
-    permission_required = 'can_manage_employees'
+class DelegationAcceptView(LoginRequiredMixin, View):
+    # permission_required = 'can_manage_employees'
+    def get(self, request, pk):
+        delegation = get_object_or_404(Delegation, pk=pk)
+        user = delegation.employee
+        ctx = {
+            "delegation": delegation,
+            'user': user,
+        }
+        return render(request, "office_tool_app/delegation_confirm_accept.html", ctx)
 
     def post(self, request, pk):
 
@@ -258,8 +269,16 @@ class DelegationAcceptView(PermissionRequiredMixin, View):
         return redirect('manage-detail', user.username)
 
 
-class DelegationRejectView(PermissionRequiredMixin, View):
-    permission_required = 'can_manage_employees'
+class DelegationRejectView(LoginRequiredMixin, View):
+    # permission_required = 'can_manage_employees'
+    def get(self, request, pk):
+        delegation = get_object_or_404(Delegation, pk=pk)
+        user = delegation.employee
+        ctx = {
+            "delegation": delegation,
+            'user': user,
+        }
+        return render(request, "office_tool_app/delegation_confirm_accept.html", ctx)
 
     def post(self, request, pk):
 
@@ -306,9 +325,23 @@ class MedicalLeaveCreateView(PermissionRequiredMixin, View):
             return redirect('manage-detail', user.username)
 
 
-class MedicalDeleteView(LoginRequiredMixin, DeleteView):
-    model = MedicalLeave
-    success_url = reverse_lazy("medical-leave")
+class MedicalDeleteView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        medical_leave = get_object_or_404(MedicalLeave, pk=pk)
+        user = medical_leave.employee
+        ctx = {
+            "medical_leave": medical_leave,
+            'user': user,
+        }
+        return render(request, "office_tool_app/medicalleave_confirm_delete.html", ctx)
+
+    def post(self, request, pk):
+        medical_leave = get_object_or_404(MedicalLeave, pk=pk)
+        medical_leave.delete()
+        user = medical_leave.employee
+        print(user)
+        messages.success(request, f"{medical_leave} has been deleted")
+        return redirect('manage-detail', user.username)
 
 
 class ManageView(PermissionRequiredMixin, View):
@@ -347,6 +380,8 @@ class ManageDetailView(PermissionRequiredMixin, View):
         vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
         messages = user.messages_to_employee.all().order_by('-sending_date')
         delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
+        vacations_accepted = user.vacation_employee.filter(status='accepted').filter(vacation_from__gte=today)
+        delegations_accepted = user.delegation_employee.filter(status='accepted').filter(start_date__gte=today)
 
         ctx = {
             'group_users': group_users,
@@ -355,5 +390,7 @@ class ManageDetailView(PermissionRequiredMixin, View):
             'delegations': delegations,
             'medicals': medicals,
             'user': user,
+            'vacations_accepted': vacations_accepted,
+            'delegations_accepted': delegations_accepted,
         }
         return render(request, 'office_tool_app/manageDetail.html', ctx)

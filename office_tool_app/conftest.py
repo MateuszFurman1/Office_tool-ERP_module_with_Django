@@ -1,30 +1,68 @@
+from datetime import datetime
 import pytest
-from django.contrib.auth.models import User, Permission
-
-from booking_rooms_app.models import Room, Comment
+from office_tool_app.models import Delegation, Vacation, MedicalLeave, AddressHome, AddressCore, User
 
 
 @pytest.fixture
-def rooms():
+def users():
+    name_lst = ['Tadeusz', 'Marek', 'Janusz', 'Franciszek', 'Julius']
     lst = []
-    for n in range(10):
-        p = Room.objects.create(name=n, seats=n, projector=False, created='2022-11-07 20:20:46.816306+01',
-                                updated='2022-11-07 20:20:46.816306+01')
+    for n in range(5):
+        p = User.objects.create(username=name_lst[n-1])
         lst.append(p)
     return lst
 
 
 @pytest.fixture
 def user():
-    return User.objects.create(username='tadeusz')
+    return User.objects.create(username='Tadeusz')
 
 
 @pytest.fixture
-def comments(user):
+def delegations(users):
+    today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = Comment.objects.create(text=n, author=user)
+        p = Delegation.objects.create(employee=users[n-1], start_date=n, end_date=today, delegation_country='DE',
+                                      status='pending')
         lst.append(p)
     return lst
 
 
+@pytest.fixture
+def vacations(users):
+    today = str(datetime.now().date())
+    lst = []
+    for n in range(5):
+        p = Vacation.objects.create(employee=users[n-1], replacement=users[-1], vacation_from=n, vacation_to=today,
+                                    status='pending')
+        lst.append(p)
+    return lst
+
+
+@pytest.fixture
+def medical_leaves(users):
+    today = str(datetime.now().date())
+    lst = []
+    for n in range(5):
+        p = MedicalLeave.objects.create(employee=users[n-1], from_date=n, to_date=today)
+        lst.append(p)
+    return lst
+
+
+@pytest.fixture
+def address_home(users):
+    lst = []
+    for n in range(5):
+        p = AddressHome.objects.create(employee=users[n-1], city=n, province=n, country_region=n, postal_code=n)
+        lst.append(p)
+    return lst
+
+
+@pytest.fixture
+def address_core(users):
+    lst = []
+    for n in range(5):
+        p = AddressCore.objects.create(employee=users[n-1], city=n, province=n, country_region=n, postal_code=n)
+        lst.append(p)
+    return lst

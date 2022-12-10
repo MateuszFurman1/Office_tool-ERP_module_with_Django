@@ -42,8 +42,8 @@
     <div class="col-sm">
       <div class="card mt-5 border border-dark" style="width: auto;" >
         <div class="card-body">
-        <h5 class="card-title">All {{ user }} vacations:</h5>
-            {% for vacation in vacations %}
+        <h5 class="card-title">All approved {{ user }} vacations:</h5>
+            {% for vacation in vacations_accepted %}
         <p class="card-text">
 
         from: {{ vacation.vacation_from }}<br>
@@ -58,8 +58,8 @@
     <div class="col-sm">
       <div class="card mt-5 border border-dark" style="width: auto;" >
         <div class="card-body">
-        <h5 class="card-title">All {{ user }} delegations:</h5>
-            {% for delegation in delegations %}
+        <h5 class="card-title">All approved {{ user }} delegations:</h5>
+            {% for delegation in delegations_accepted %}
         <p class="card-text">
                <h6> Delegation to: {{ delegation.delegation_country }} <br></h6>
         start date: {{ delegation.start_date }}<br>
@@ -77,7 +77,7 @@
             {% for medical in medicals %}
         <p class="card-text">
                <h6> Medical leave from: {{ medical.from_date }} to {{ medical.to_date }} <br></h6>
-                <a href="{% url 'delete-medical' user.pk %}" class="btn btn-primary text-white">Delete</a>
+                <a href="{% url 'delete-medical' medical.pk %}" class="btn btn-primary text-white">Delete</a>
             {% endfor %}
         </p>
                     <a href="{% url 'create-medical' user.username %}" class="btn btn-primary text-white">Add new</a>

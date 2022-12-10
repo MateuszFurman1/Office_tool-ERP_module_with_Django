@@ -5,13 +5,15 @@
     <div class="card mt-5 border border-dark" style="width: auto;" >
         <div class="card-body">
         <h5 class="card-title">Your Medical leave:</h5>
+        <ul>
             {% for medical in medicals %}
         <p class="card-text">
-               <h6> Medical leave from: {{ medical.from_date }} <br></h6>
-        Medical leave to: {{ medical.to_date }}<br>
-
+                <li>Medical leave from: <b>{{ medical.from_date }}</b> </li>
+                <li>Medical leave to: <b> {{ medical.to_date }}</b> </li>
+            {% empty %}
+                <li>No Medical leave yet</li>
           {% endfor %}
-        </p>
+        </ul>
        </div>
     </div>
     

@@ -7,32 +7,38 @@
       <div class="card mt-5 border border-dark" >
         <div class="card-body">
         <h5 class="card-title">Pending requests:</h5>
-
-        <p class="card-text">
+        <ul>
+        <h6>Delegations:</h6>
             {% for delegation in delegations %}
-               <h6> employee: {{ delegation.employee }} <br></h6>
-                   Delegation to: {{ delegation.delegation_country }} <br>
-                    start date: {{ delegation.start_date }}<br>
-                end date: {{ delegation.end_date }}<br>
-                status: {{ delegation.status }}<br>
+                <p class="card-text">
+               <h6> Employee: {{ delegation.employee }}</h6>
+                <li>Delegation to: {{ delegation.delegation_country }}</li>
+                <li>start date: {{ delegation.start_date }}</li>
+                <li>end date: {{ delegation.end_date }}</li>
+                <li>status: {{ delegation.status }}</li>
         <a href="{% url 'accept-delegation' delegation.pk %}" class="btn btn-primary text-white">Accept</a>
         <a href="{% url 'reject-delegation' delegation.pk %}" class="btn btn-primary text-white">Reject</a>
-
+            {% empty %}
+                <li>No pending delegation requests</li>
           {% endfor %}
-        </p>
+        </ul>
         <p class="card-text">
+        <ul>
+        <h6>Vacations:</h6>
             {% for vacation in vacations %}
-            <br>
-                <h6>employee: {{ vacation.employee }}<br></h6>
-            from: {{ vacation.vacation_from }}<br>
-            to: {{ vacation.vacation_to }}<br>
-            status: {{ vacation.status }}<br>
-            replacement employee: {{ vacation.replacement }}<br>
+                <h6>Employee: {{ vacation.employee }}</h6>
+            <li>from: {{ vacation.vacation_from }}</li>
+            <li>to: {{ vacation.vacation_to }}</li>
+            <li>status: {{ vacation.status }}</li>
+            <li>replacement employee: {{ vacation.replacement }}</li>
         <a href="{% url 'accept-vacation' vacation.pk %}" class="btn btn-primary text-white">Accept</a>
         <a href="{% url 'reject-vacation' vacation.pk %}" class="btn btn-primary text-white">Reject</a>
-
+            <br>
+            {% empty %}
+                <li>No pending vacation requests</li>
           {% endfor %}
-        </p>
+        </ul>
+            </p>
       </div>
   </div>
 </div>
@@ -43,14 +49,17 @@
       <div class="card mt-5 border border-dark" style="width: auto;" >
         <div class="card-body">
         <h5 class="card-title">All approved {{ user }} vacations:</h5>
+        <ul>
             {% for vacation in vacations_accepted %}
         <p class="card-text">
-
-        from: {{ vacation.vacation_from }}<br>
-          to: {{ vacation.vacation_to }}<br>
-        status: {{ vacation.status }}<br>
-        replacement employee: {{ vacation.vacation_replacement }}<br>
+        <li>from: {{ vacation.vacation_from }}</li>
+        <li>to: {{ vacation.vacation_to }}</li>
+        <li>status: {{ vacation.status }}</li>
+        <li>replacement employee: {{ vacation.replacement }}</li>
+                {% empty %}
+                <li>No pending vacation requests</li>
           {% endfor %}
+        </ul>
         </p>
         </div>
     </div>
@@ -59,13 +68,17 @@
       <div class="card mt-5 border border-dark" style="width: auto;" >
         <div class="card-body">
         <h5 class="card-title">All approved {{ user }} delegations:</h5>
+        <ul>
             {% for delegation in delegations_accepted %}
         <p class="card-text">
                <h6> Delegation to: {{ delegation.delegation_country }} <br></h6>
-        start date: {{ delegation.start_date }}<br>
-            end date: {{ delegation.end_date }}<br>
-        status: {{ delegation.status }}<br>
+                <li>start date: {{ delegation.start_date }}</li>
+            <li>end date: {{ delegation.end_date }}</li>
+        <li>status: {{ delegation.status }}</li>
+                {% empty %}
+                <li>No approval delegations</li>
           {% endfor %}
+        </ul>
         </p>
         </div>
     </div>
@@ -86,5 +99,7 @@
     </div>
     </div>
   </div>
+</div>
+<br>
 </div>
 {% endblock %}

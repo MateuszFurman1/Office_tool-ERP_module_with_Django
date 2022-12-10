@@ -6,10 +6,12 @@
         <div class="card-body">
         <h5 class="card-title">Your group members:</h5>
         <p class="card-text">
+        <ul>
                <h6> Group name: {{ group_one.name }} <br></h6>
         Group members: {% for user in group_one_users %}
-            {{ user }}<br>
+            <li>{{ user }}</li>
             {% endfor %}
+        </ul>
         </p>
        </div>
     </div>
@@ -19,12 +21,12 @@
         <h5 class="card-title">Your subordinates members on vacation/delegations:</h5>
         <p class="card-text">
         <ul>
-            <h6>Vacation:</h6> {% for vacation in vacations %}
-                <li>{{ vacation.employee }}</li>
+            <h6>Vacation:</h6> {% for vacation in vacations_list %}
+                <li>{{ vacation }}</li>
                         {% endfor %}
                         <br>
-            <h6>Delegations:</h6> {% for delegation in delegations %}
-                <li>{{ delegation.employee }}</li>
+            <h6>Delegations:</h6> {% for delegation in delegations_list %}
+                <li>{{ delegation}}</li>
                         {% endfor %}
         </ul>
         </p>

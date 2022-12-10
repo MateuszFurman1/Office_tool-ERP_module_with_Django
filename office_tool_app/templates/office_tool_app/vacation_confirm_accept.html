@@ -1,0 +1,14 @@
+{% extends 'office_tool_app/Base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div>
+<form action="" class="form-label text-center" method="POST">
+    {% csrf_token %}
+    <p>Are you sure you want to process ?</p>
+    {{ form }}
+    <input type="submit" value="Confirm" class="btn btn-primary">
+    <a href="{% url 'manage-detail' user.username %}" class="btn btn-primary">Cancel</a>
+</form>
+{% endblock content %}

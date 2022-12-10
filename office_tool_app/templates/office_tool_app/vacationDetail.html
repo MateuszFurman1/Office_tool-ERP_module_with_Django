@@ -12,17 +12,31 @@
           to: {{ vacation.vacation_to }}<br>
         status: {{ vacation.status }}<br>
         replacement employee: {{ vacation.replacement }}<br>
+                <br>
                 <a href="{% url 'delete-vacation' vacation.pk %}" class="btn btn-primary text-white">Delete</a>
           {% endfor %}
 
         </p>
         </div>
     </div>
+<div class="card mt-5 border border-dark" style="width: auto;" >
+        <div class="card-body">
+        <h5 class="card-title">Future approval vacations:</h5>
+            {% for vacation in vacations_future %}
+        <p class="card-text">
 
+        from: {{ vacation.vacation_from }}<br>
+          to: {{ vacation.vacation_to }}<br>
+        status: {{ vacation.status }}<br>
+        replacement employee: {{ vacation.replacement }}<br>
+          {% endfor %}
+        </p>
+        </div>
+    </div>
     <div class="card mt-5 border border-dark" style="width: auto;" >
         <div class="card-body">
-        <h5 class="card-title">Hisorical vacations:</h5>
-            {% for vacation in vacations %}
+        <h5 class="card-title">Historical vacations:</h5>
+            {% for vacation in vacations_past %}
         <p class="card-text">
 
         from: {{ vacation.vacation_from }}<br>

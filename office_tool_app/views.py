@@ -166,16 +166,28 @@ class VacationCreateView(LoginRequiredMixin, View):
     def post(self, request):
         user = request.user
         form = VacationForm(request.POST)
-        if form.is_valid():
-            vacation = form.save(commit=False)
-            vacation.employee = user
-            vacation.status = 'pending'
-            vacation.save()
-            return redirect('vacation-detail')
         ctx = {
             'form': form,
             'user': user,
         }
+        if form.is_valid():
+            vacation = form.save(commit=False)
+            vacation.employee = user
+            all_vacations = Vacation.objects.filter(employee=user)
+            vacation_from = form.cleaned_data['vacation_from']
+            vacation_to = form.cleaned_data['vacation_to']
+            for one_vacation in all_vacations:
+                if (one_vacation.vacation_from <= vacation_from) and (one_vacation.vacation_to >= vacation_from) or \
+                        (one_vacation.vacation_from <= vacation_to) and (one_vacation.vacation_to >= vacation_to):
+                    messages.error(request, "Vacation in this date already exist!")
+                    return render(request, 'office_tool_app/form2.html', ctx)
+            if request.user == vacation.replacement:
+                messages.error(request, "Replacement employee validation error!")
+                return render(request, 'office_tool_app/form2.html', ctx)
+            vacation.status = 'pending'
+            vacation.save()
+            return redirect('vacation-detail')
+
         return render(request, 'office_tool_app/form2.html', ctx)
 
 
@@ -267,16 +279,25 @@ class DelegationCreateView(LoginRequiredMixin, View):
     def post(self, request):
         user = request.user
         form = DelegationForm(request.POST)
-        if form.is_valid():
-            delegation = form.save(commit=False)
-            delegation.employee = user
-            delegation.status = 'pending'
-            delegation.save()
-            return redirect('delegation-detail')
         ctx = {
             'form': form,
             'user': user,
         }
+        if form.is_valid():
+            delegation = form.save(commit=False)
+            delegation.employee = user
+            all_delegations = Delegation.objects.filter(employee=user)
+            start_date = form.cleaned_data['start_date']
+            end_date = form.cleaned_data['end_date']
+            for one_delegations in all_delegations:
+                if (one_delegations.start_date <= start_date) and (one_delegations.end_date >= start_date) or \
+                        (one_delegations.start_date <= end_date) and (one_delegations.end_date >= end_date):
+                    messages.error(request, "Delegation in this date already exist!")
+                    return render(request, 'office_tool_app/form2.html', ctx)
+            delegation.status = 'pending'
+            delegation.save()
+            return redirect('delegation-detail')
+
         return render(request, 'office_tool_app/form2.html', ctx)
 
 
@@ -367,15 +388,24 @@ class MedicalLeaveCreateView(PermissionRequiredMixin, View):
     def post(self, request, username):
         user = User.objects.get(username=username)
         form = MedicalLeaveForm(request.POST)
-        if form.is_valid():
-            medical_leave = form.save(commit=False)
-            medical_leave.employee = user
-            medical_leave.save()
-            return redirect('manage-detail', user.username)
         ctx = {
             "form": form,
             'user': user,
         }
+        if form.is_valid():
+            medical_leave = form.save(commit=False)
+            medical_leave.employee = user
+            all_medical_leave = MedicalLeave.objects.filter(employee=user)
+            from_date = form.cleaned_data['from_date']
+            to_date = form.cleaned_data['to_date']
+            for one_medical_leave in all_medical_leave:
+                if (one_medical_leave.from_date <= from_date) and (one_medical_leave.to_date >= from_date) or \
+                        (one_medical_leave.from_date <= to_date) and (one_medical_leave.to_date >= to_date):
+                    messages.error(request, "Medical Leave in this date already exist!")
+                    return render(request, 'office_tool_app/form2.html', ctx)
+            medical_leave.save()
+            return redirect('manage-detail', user.username)
+
         return render(request, "office_tool_app/form2.html", ctx)
 
 

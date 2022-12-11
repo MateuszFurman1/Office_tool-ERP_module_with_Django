@@ -53,6 +53,9 @@ class Vacation(models.Model):
     vacation_to = models.DateField()
     status = models.CharField(max_length=16, choices=status_choice)
 
+    def __str__(self):
+        return f'Vacation id: {self.id} from: {self.vacation_from} to: {self.vacation_to}'
+
 
 class Messages(models.Model):
     from_employee = models.ForeignKey(User, related_name="messages_from_employee", on_delete=models.CASCADE)
@@ -81,8 +84,14 @@ class Delegation(models.Model):
     delegation_country = models.CharField(max_length=2, choices=delegation_country_choice)
     status = models.CharField(max_length=16, choices=status_choice)
 
+    def __str__(self):
+        return f'Delegation country: {self.delegation_country} from: {self.start_date} to: {self.end_date}'
+
 
 class MedicalLeave(models.Model):
     employee = models.ForeignKey(User, related_name="medical_employee", on_delete=models.CASCADE)
     from_date = models.DateField()
     to_date = models.DateField()
+
+    def __str__(self):
+        return f'Medical Leave id: {self.id} from: {self.from_date} to: {self.to_date}'

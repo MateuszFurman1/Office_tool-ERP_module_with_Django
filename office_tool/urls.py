@@ -19,7 +19,7 @@ from django.urls import path
 from office_tool_app.views import HomeView, RegistrationView, LoginView, LogoutView, ProfileView, VacationDetailView, \
     DelegationDetailView, ManageView, MedicalLeaveView, ManageDetailView, MedicalLeaveCreateView, DelegationCreateView, \
     DelegationDeleteView, VacationCreateView, VacationDeleteView, MedicalDeleteView, VacationAcceptView, \
-    DelegationRejectView, DelegationAcceptView, VacationRejectView
+    DelegationRejectView, DelegationAcceptView, VacationRejectView, MessagesView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,6 +32,7 @@ urlpatterns = [
     path('delegation-detail/', DelegationDetailView.as_view(), name='delegation-detail'),
     path('manage/', ManageView.as_view(), name='manage'),
     path('medical-leave/', MedicalLeaveView.as_view(), name='medical-leave'),
+    path('messages/', MessagesView.as_view(), name='messages'),
     path('delete-medical/<int:pk>/', MedicalDeleteView.as_view(), name='delete-medical'),
     path('manage-detail/<username>/', ManageDetailView.as_view(), name='manage-detail'),
     path('create-medicalleave/<username>/', MedicalLeaveCreateView.as_view(), name='create-medical'),

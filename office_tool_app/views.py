@@ -26,7 +26,7 @@ class HomeView(LoginRequiredMixin, View):
             group_users = group.user_set.all()
             # group_users2 = User.objects.filter(group=group)
             vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
-            messages = user.messages_to_employee.all().order_by('-sending_date')
+            messages = user.messages_to_employee.all().order_by('-sending_date')[:5]
             delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
 
             ctx = {
@@ -143,7 +143,7 @@ class VacationDetailView(LoginRequiredMixin, View):
         user = request.user
         today = str(datetime.now().date())
         vacations_today = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
-        vacations_past = user.vacation_employee.filter(status='accepted').filter(vacation_from__lte=today)
+        vacations_past = user.vacation_employee.filter(status='accepted').filter(vacation_from__lte=today)[:5]
         vacations_future = user.vacation_employee.filter(status='accepted').filter(vacation_from__gt=today)
         ctx = {
             'vacations_today': vacations_today,
@@ -172,6 +172,11 @@ class VacationCreateView(LoginRequiredMixin, View):
             vacation.status = 'pending'
             vacation.save()
             return redirect('vacation-detail')
+        ctx = {
+            'form': form,
+            'user': user,
+        }
+        return render(request, 'office_tool_app/form2.html', ctx)
 
 
 class VacationDeleteView(LoginRequiredMixin, DeleteView):
@@ -239,7 +244,7 @@ class DelegationDetailView(LoginRequiredMixin, View):
         user = request.user
         today = str(datetime.now().date())
         delegations_today = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
-        delegations_past = user.delegation_employee.filter(status='accepted').filter(start_date__lte=today)
+        delegations_past = user.delegation_employee.filter(status='accepted').filter(start_date__lte=today)[:5]
         delegations_future = user.delegation_employee.filter(status='accepted').filter(start_date__gt=today)
         ctx = {
             'delegations_today': delegations_today,
@@ -268,6 +273,11 @@ class DelegationCreateView(LoginRequiredMixin, View):
             delegation.status = 'pending'
             delegation.save()
             return redirect('delegation-detail')
+        ctx = {
+            'form': form,
+            'user': user,
+        }
+        return render(request, 'office_tool_app/form2.html', ctx)
 
 
 class DelegationDeleteView(LoginRequiredMixin, DeleteView):
@@ -334,7 +344,7 @@ class MedicalLeaveView(LoginRequiredMixin, View):
 
     def get(self, request):
         user = request.user
-        medicals = user.medical_employee.all()
+        medicals = user.medical_employee.all()[:5]
         ctx = {
             'medicals': medicals
 
@@ -362,6 +372,11 @@ class MedicalLeaveCreateView(PermissionRequiredMixin, View):
             medical_leave.employee = user
             medical_leave.save()
             return redirect('manage-detail', user.username)
+        ctx = {
+            "form": form,
+            'user': user,
+        }
+        return render(request, "office_tool_app/form2.html", ctx)
 
 
 class MedicalDeleteView(LoginRequiredMixin, View):
@@ -378,9 +393,18 @@ class MedicalDeleteView(LoginRequiredMixin, View):
         medical_leave = get_object_or_404(MedicalLeave, pk=pk)
         medical_leave.delete()
         user = medical_leave.employee
-        print(user)
         messages.success(request, f"{medical_leave} has been deleted")
         return redirect('manage-detail', user.username)
+
+
+class MessagesView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        messages = Messages.objects.filter(to_employee=user)[:10]
+        ctx = {
+            'messages': messages,
+        }
+        return render(request, 'office_tool_app/messagesDetail.html', ctx)
 
 
 class ManageView(PermissionRequiredMixin, View):
@@ -426,12 +450,12 @@ class ManageDetailView(PermissionRequiredMixin, View):
         today = str(datetime.now().date())
         group = user.group
         group_users = group.user_set.all()
-        medicals = user.medical_employee.all()
+        medicals = user.medical_employee.all()[:5]
         vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
         messages = user.messages_to_employee.all().order_by('-sending_date')
         delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
-        vacations_accepted = user.vacation_employee.filter(status='accepted').filter(vacation_from__gte=today)
-        delegations_accepted = user.delegation_employee.filter(status='accepted').filter(start_date__gte=today)
+        vacations_accepted = user.vacation_employee.filter(status='accepted').filter(vacation_from__gte=today)[:5]
+        delegations_accepted = user.delegation_employee.filter(status='accepted').filter(start_date__gte=today)[:5]
 
         ctx = {
             'group_users': group_users,

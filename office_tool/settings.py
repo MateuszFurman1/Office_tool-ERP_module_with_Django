@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'officetool',
         'ENGINE': 'django.db.backends.postgresql',
         'USER': 'postgres',
-        'PASSWORD': 'coderslab',
+        'PASSWORD': 'zoska123',
     }
 }
 

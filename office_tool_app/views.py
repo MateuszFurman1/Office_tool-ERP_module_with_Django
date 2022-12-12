@@ -3,6 +3,7 @@ from datetime import datetime
 import vacation as vacation
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
@@ -23,8 +24,8 @@ class HomeView(LoginRequiredMixin, View):
         if user.is_authenticated:
             today = str(datetime.now().date())
             group = user.group
-            group_users = group.user_set.all()
-            # group_users2 = User.objects.filter(group=group)
+            # group_users = group.user_set.all()
+            group_users = User.objects.filter(group=group).exclude(first_name=user.first_name)
             vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
             messages = user.messages_to_employee.all().order_by('-sending_date')[:5]
             delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
@@ -267,6 +268,8 @@ class DelegationDetailView(LoginRequiredMixin, View):
 
 
 class DelegationCreateView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
     def get(self, request):
         user = request.user
         form = DelegationForm()
@@ -410,6 +413,8 @@ class MedicalLeaveCreateView(PermissionRequiredMixin, View):
 
 
 class MedicalDeleteView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
     def get(self, request, pk):
         medical_leave = get_object_or_404(MedicalLeave, pk=pk)
         user = medical_leave.employee
@@ -428,6 +433,8 @@ class MedicalDeleteView(LoginRequiredMixin, View):
 
 
 class MessagesView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
     def get(self, request):
         user = request.user
         messages = Messages.objects.filter(to_employee=user)[:10]
@@ -443,25 +450,25 @@ class ManageView(PermissionRequiredMixin, View):
     def get(self, request):
         user = request.user
         today = str(datetime.now().date())
-        group_one = Group.objects.get(pk=1)
-        group_one_users = group_one.user_set.all()
-        group_two = Group.objects.get(pk=2)
-        group_two_users = group_two.user_set.all()
-        vacations = Vacation.objects.all().filter(employee__group=group_two).filter(vacation_from__gte=today)
+        group = Group.objects.get(name='employee')
+        group_manage = Group.objects.get(name='manager')
+        group_manage_users = group_manage.user_set.all()
+        group_users = group.user_set.all()
+        vacations = Vacation.objects.all().filter(employee__group=group).filter(vacation_from__gte=today)
         vacations_list = []
         for i in vacations:
             if i.employee not in vacations_list:
                 vacations_list.append(i.employee)
-        delegations = Delegation.objects.all().filter(employee__group=group_two).filter(start_date__gte=today)
+        delegations = Delegation.objects.all().filter(employee__group=group).filter(start_date__gte=today)
         delegations_list = []
         for i in delegations:
             if i.employee not in delegations_list:
                 delegations_list.append(i.employee)
         ctx = {
-            'group_one': group_one,
-            'group_one_users': group_one_users,
-            'group_two': group_two,
-            'group_two_users': group_two_users,
+            'group': group,
+            'group_users': group_users,
+            'group_manage': group_manage,
+            'group_manage_users': group_manage_users,
             'vacations': vacations,
             'delegations': delegations,
             'user': user,

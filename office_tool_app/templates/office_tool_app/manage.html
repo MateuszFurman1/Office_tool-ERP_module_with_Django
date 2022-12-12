@@ -7,8 +7,8 @@
         <h5 class="card-title">Your group members:</h5>
         <p class="card-text">
         <ul>
-               <h6> Group name: {{ group_one.name }} <br></h6>
-        Group members: {% for user in group_one_users %}
+               <h6> Group name: {{ group_manage.name }} <br></h6>
+        Group members: {% for user in group_manage_users %}
             <li>{{ user }}</li>
             {% endfor %}
         </ul>
@@ -23,10 +23,14 @@
         <ul>
             <h6>Vacation:</h6> {% for vacation in vacations_list %}
                 <li>{{ vacation }}</li>
+            {% empty %}
+                <li>No members on vacations:</li>
                         {% endfor %}
                         <br>
             <h6>Delegations:</h6> {% for delegation in delegations_list %}
                 <li>{{ delegation}}</li>
+            {% empty %}
+                <li>No members on delegations:</li>
                         {% endfor %}
         </ul>
         </p>
@@ -37,9 +41,11 @@
         <div class="card-body">
         <h5 class="card-title">Your subordinates members:</h5>
         <p class="card-text">
-            {% for user in group_two_users %}
+            {% for user in group_users %}
                 <li><a href="{% url 'manage-detail' user.username %}">
                     {{ user }}</a></li>
+                {% empty %}
+                <li>No subordinates members:</li>
             {% endfor %}
         </p>
        </div>

@@ -1,6 +1,6 @@
 from datetime import datetime
 import pytest
-from office_tool_app.models import Delegation, Vacation, MedicalLeave, AddressHome, AddressCore, User
+from office_tool_app.models import Delegation, Vacation, MedicalLeave, AddressHome, AddressCore, User, Group
 
 
 @pytest.fixture
@@ -66,3 +66,13 @@ def address_core(users):
         p = AddressCore.objects.create(employee=users[n-1], city=n, province=n, country_region=n, postal_code=n)
         lst.append(p)
     return lst
+
+
+@pytest.fixture
+def groups(users):
+    lst = []
+    m = Group.objects.create(name='manager')
+    e = Group.objects.create(name='employee')
+    lst.append(m)
+    lst.append(e)
+    return  lst

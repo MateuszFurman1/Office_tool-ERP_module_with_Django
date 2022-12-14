@@ -71,8 +71,8 @@ def address_core(users):
 @pytest.fixture
 def groups(users):
     lst = []
-    m = Group.objects.create(name='manager')
-    e = Group.objects.create(name='employee')
+    m = Group.objects.create(name='management')
+    e = Group.objects.create(name='non-managerial employees')
     lst.append(m)
     lst.append(e)
     return  lst

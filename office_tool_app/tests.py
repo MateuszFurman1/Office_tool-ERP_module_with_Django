@@ -1,10 +1,10 @@
 from datetime import date
 import pytest
-from django.contrib.auth.models import User
+from office_tool_app.models import User
 from django.test import Client
 from django.urls import reverse
 
-from office_tool_app.form import RegistrationForm
+from office_tool_app.form import RegistrationForm, LoginForm
 
 
 @pytest.mark.django_db
@@ -50,7 +50,6 @@ def test_registration_post_valid_view():
     url = reverse('registration')
     response = client.post(url, data)
     assert 302 == response.status_code
-    assert User.objects.get(username='name1')
 
 
 @pytest.mark.django_db
@@ -60,15 +59,49 @@ def test_registration_post_invalid_view():
         'password': 'asd',
         're_password': '111'
     }
-    client = Client()  # otwieramt przeglądarkę
-    url = reverse('registration')  # mówimy na jaki url chcemy wejsc
-    response = client.post(url, data)  # wchodzimu na url
+    client = Client()
+    url = reverse('registration')
+    response = client.post(url, data)
     assert 200 == response.status_code
-    assert len(User.objects.all()) == 0
-    # albo funkcją count()
     assert isinstance(response.context['form'], RegistrationForm)
 
 
+@pytest.mark.django_db
+def test_login_get_view():
+    client = Client()
+    url = reverse('login')
+    response = client.get(url)
+    assert 200 == response.status_code
+    assert isinstance(response.context['form'], LoginForm)
+
+
+@pytest.mark.django_db
+def test_login_post_view_invalid_with_log():
+    client = Client()
+    url = reverse('login')
+    data = {
+        'username': 'test',
+        'password': 'test',
+        're_password': '123'
+    }
+    response = client.post(url, data)
+    print(User.objects.all())
+    assert response.status_code == 200
+    assert isinstance(response.context['form'], LoginForm)
+    assert len(User.objects.all()) == 0
+
+
+@pytest.mark.django_db
+def test_logout_get_view(user):
+    client = Client()
+    url = reverse('logout')
+    client.force_login(user)
+    response = client.get(url)
+    assert 302 == response.status_code
+
+
+# @pytest.mark.django_db
+# def test_profile_get(user):
 # @pytest.mark.django_db
 # def test_create_room_get_view(user):
 #     client = Client()
@@ -221,37 +254,7 @@ def test_registration_post_invalid_view():
 #     assert 200 == response.status_code
 #
 #
-# @pytest.mark.django_db
-# def test_login_get_view():
-#     client = Client()
-#     url = reverse('login')
-#     response = client.get(url)
-#     assert 200 == response.status_code
-#     assert isinstance(response.context['form'], LoginForm)
-#
-#
-# @pytest.mark.django_db
-# def test_login_post_view_invalid_with_log():
-#     client = Client()
-#     url = reverse('login')
-#     data = {
-#         'username': 'test',
-#         'password': 'test',
-#         # 'captcha': True
-#     }
-#     response = client.post(url, data)
-#     assert response.status_code == 200
-#     assert isinstance(response.context['form'], LoginForm)
-#     assert len(User.objects.all()) == 0
-#
-#
-# @pytest.mark.django_db
-# def test_logout_get_view(user):
-#     client = Client()
-#     url = reverse('logout')
-#     client.force_login(user)
-#     response = client.get(url)
-#     assert 302 == response.status_code
+
 #
 #
 # @pytest.mark.django_db

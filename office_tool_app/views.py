@@ -1,5 +1,4 @@
 from datetime import datetime
-
 import vacation as vacation
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -16,6 +15,12 @@ from office_tool_app.models import User, Group, AddressHome, AddressCore, Vacati
 
 
 class HomeView(LoginRequiredMixin, View):
+    '''
+    Display pending delegations and vacations request, messages received from manager
+    and employees from user group.
+    Login require
+    return django home.html templates
+    '''
     login_url = "/login/"
 
     def get(self, request):
@@ -41,6 +46,15 @@ class HomeView(LoginRequiredMixin, View):
 
 
 class RegistrationView(View):
+    '''
+    Registration views. Generate form to fill information and save them to
+    postgres database
+    if success:
+    return redirect to login view
+    if error:
+    return form again
+    '''
+
     def get(self, request):
         form = RegistrationForm()
         page = 'registration'
@@ -66,6 +80,13 @@ class RegistrationView(View):
 
 
 class LoginView(View):
+    '''
+    Render login form. On post side check password and authorize user.
+    If password is the same in both form fields:
+    return redirect to home view
+    If password is wrong:
+    return form again
+    '''
     def get(self, request):
         form = LoginForm()
         page = 'login'
@@ -94,6 +115,10 @@ class LoginView(View):
 
 
 class LogoutView(View):
+    '''
+    Logout user. After logout. Display success message
+    return redirect to login views
+    '''
     def get(self, request):
         logout(request)
         messages.success(request, "Logout successfully")
@@ -101,6 +126,11 @@ class LogoutView(View):
 
 
 class ProfileView(LoginRequiredMixin, View):
+    '''
+    Display all information about login user. Pass instance with current login user
+    Load information from 3 models: User, AddressHome, AddressCore
+    return profile template
+    '''
     login_url = "/login/"
 
     def get(self, request):
@@ -138,6 +168,11 @@ class ProfileView(LoginRequiredMixin, View):
 
 
 class VacationDetailView(LoginRequiredMixin, View):
+    '''
+    Display detail information about current login user vacations.
+    Display pending vacation reguests, historical vacation, approval future vacation
+    return vacation template
+    '''
     login_url = "/login/"
 
     def get(self, request):
@@ -155,6 +190,15 @@ class VacationDetailView(LoginRequiredMixin, View):
 
 
 class VacationCreateView(LoginRequiredMixin, View):
+    '''
+    Create vacation instance for current login user.
+    Validate:
+    - replacement employee can not be login user,
+    - if vacation request already exist in database for this period of time,
+    - if vacation date is not from the past
+    if success return redirect to vacation detail view
+    if error return form again
+    '''
     def get(self, request):
         user = request.user
         form = VacationForm()
@@ -193,11 +237,23 @@ class VacationCreateView(LoginRequiredMixin, View):
 
 
 class VacationDeleteView(LoginRequiredMixin, DeleteView):
+    '''
+    Generic view which delete pointed vacation.
+    parm: primary key of vacation
+    return redirect to vacation-detail
+    '''
     model = Vacation
     success_url = reverse_lazy("vacation-detail")
 
 
 class VacationAcceptView(PermissionRequiredMixin, View):
+    '''
+    View with permission to manage employees.
+    Get the vacation pending request form employee and change status to accepted.
+    Also created message to him with information about accepting request.
+    parm: primary key of vacation
+    return redirect to manage-detail view with parm. username
+    '''
     permission_required = 'can_manage_employees'
 
     def get(self, request, pk):
@@ -225,6 +281,13 @@ class VacationAcceptView(PermissionRequiredMixin, View):
 
 
 class VacationRejectView(PermissionRequiredMixin, View):
+    '''
+    View with permission to manage employees.
+    Get the vacation pending request form employee and change status to rejected.
+    Also created message to him with information about rejected request.
+    parm: primary key of vacation
+    return redirect to manage-detail view with parm. username
+    '''
     permission_required = 'can_manage_employees'
 
     def get(self, request, pk):
@@ -251,6 +314,11 @@ class VacationRejectView(PermissionRequiredMixin, View):
 
 
 class DelegationDetailView(LoginRequiredMixin, View):
+    '''
+    Display detail information about current login user delegation.
+    Display pending delegation reguests, historical delegation, approval future delegation
+    return delegation template
+    '''
     login_url = "/login/"
 
     def get(self, request):
@@ -268,6 +336,14 @@ class DelegationDetailView(LoginRequiredMixin, View):
 
 
 class DelegationCreateView(LoginRequiredMixin, View):
+    '''
+    Create delegation instance for current login user.
+    Validate:
+    - if delegation request already exist in database for this period of time,
+    - if delegation date is not from the past
+    if success return redirect to delegation detail view
+    if error return form again
+    '''
     login_url = "/login/"
 
     def get(self, request):
@@ -305,11 +381,23 @@ class DelegationCreateView(LoginRequiredMixin, View):
 
 
 class DelegationDeleteView(LoginRequiredMixin, DeleteView):
+    '''
+    Generic view which delete pointed delegation.
+    parm: primary key of delegation
+    return redirect to delegation-detail
+    '''
     model = Delegation
     success_url = reverse_lazy("delegation-detail")
 
 
 class DelegationAcceptView(PermissionRequiredMixin, View):
+    '''
+    View with permission to manage employees.
+    Get the delegation pending request form employee and change status to accepted.
+    Also created message to him with information about accepting request.
+    parm: primary key of delegation
+    return redirect to manage-detail view with parm. username
+    '''
     permission_required = 'can_manage_employees'
 
     def get(self, request, pk):
@@ -337,6 +425,13 @@ class DelegationAcceptView(PermissionRequiredMixin, View):
 
 
 class DelegationRejectView(PermissionRequiredMixin, View):
+    '''
+    View with permission to manage employees.
+    Get the delegation pending request form employee and change status to rejected.
+    Also created message to him with information about rejected request.
+    parm: primary key of delegation
+    return redirect to manage-detail view with parm. username
+    '''
     permission_required = 'can_manage_employees'
 
     def get(self, request, pk):
@@ -364,6 +459,10 @@ class DelegationRejectView(PermissionRequiredMixin, View):
 
 
 class MedicalLeaveView(LoginRequiredMixin, View):
+    '''
+    Display detail information about current login user medical leave.
+    return medical leave template
+    '''
     login_url = "/login/"
 
     def get(self, request):
@@ -377,6 +476,14 @@ class MedicalLeaveView(LoginRequiredMixin, View):
 
 
 class MedicalLeaveCreateView(PermissionRequiredMixin, View):
+    '''
+    Create medical leave instance for current login user.
+    Validate:
+    - if medical leave request already exist in database for this period of time,
+    - if medical leave date is not from the past
+    if success return redirect to manage detail view with parm. username
+    if error return form again
+    '''
     permission_required = 'can_manage_employees'
 
     def get(self, request, username):
@@ -413,6 +520,11 @@ class MedicalLeaveCreateView(PermissionRequiredMixin, View):
 
 
 class MedicalDeleteView(LoginRequiredMixin, View):
+    '''
+    Delete pointed medical leave.
+    parm: primary key of medical leave
+    return redirect to manage detail view with parm. username
+    '''
     login_url = "/login/"
 
     def get(self, request, pk):
@@ -433,6 +545,10 @@ class MedicalDeleteView(LoginRequiredMixin, View):
 
 
 class MessagesView(LoginRequiredMixin, View):
+    '''
+    Display detail information about current login user messages.
+    return messages template
+    '''
     login_url = "/login/"
 
     def get(self, request):
@@ -445,6 +561,14 @@ class MessagesView(LoginRequiredMixin, View):
 
 
 class ManageView(PermissionRequiredMixin, View):
+    '''
+    Require permission for manage employees
+    Manage view for manager to managing of subordinates members.
+    Display group name and members of manager group.
+    Display who of subordinates members is already on vacation and delegations
+    Display subordinates members.
+    return manage templates
+    '''
     permission_required = 'can_manage_employees'
 
     def get(self, request):
@@ -480,6 +604,13 @@ class ManageView(PermissionRequiredMixin, View):
 
 
 class ManageDetailView(PermissionRequiredMixin, View):
+    '''
+    Required permission for manage employees.
+    Display pending delegation and vacation request for accepting by manager.
+    Display all approved delegation, vacation and medical leave for employee
+    parm. user username
+    return manage detail template
+    '''
     permission_required = 'can_manage_employees'
 
     def get(self, request, username):

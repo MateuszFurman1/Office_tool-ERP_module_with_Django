@@ -51,21 +51,15 @@ def medical_leaves(users):
 
 
 @pytest.fixture
-def address_home(users):
-    lst = []
-    for n in range(5):
-        p = AddressHome.objects.create(employee=users[n-1], city=n, province=n, country_region=n, postal_code=n)
-        lst.append(p)
-    return lst
+def address_home(user):
+    return AddressHome.objects.create(employee=user, city='test', province='test', country_region='test',
+                                      postal_code='test')
 
 
 @pytest.fixture
-def address_core(users):
-    lst = []
-    for n in range(5):
-        p = AddressCore.objects.create(employee=users[n-1], city=n, province=n, country_region=n, postal_code=n)
-        lst.append(p)
-    return lst
+def address_core(user):
+    return AddressCore.objects.create(employee=user, city='test', province='test', country_region='test',
+                                      postal_code='test')
 
 
 @pytest.fixture

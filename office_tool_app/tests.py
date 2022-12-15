@@ -4,7 +4,8 @@ from office_tool_app.models import User
 from django.test import Client
 from django.urls import reverse
 
-from office_tool_app.form import RegistrationForm, LoginForm
+from office_tool_app.form import RegistrationForm, LoginForm, \
+    AddressHomeForm, AddressCoreForm, UserUpdateForm
 
 
 @pytest.mark.django_db
@@ -50,6 +51,7 @@ def test_registration_post_valid_view():
     url = reverse('registration')
     response = client.post(url, data)
     assert 302 == response.status_code
+    assert User.objects.get(username='name1')
 
 
 @pytest.mark.django_db
@@ -63,6 +65,7 @@ def test_registration_post_invalid_view():
     url = reverse('registration')
     response = client.post(url, data)
     assert 200 == response.status_code
+    assert len(User.objects.all()) == 0
     assert isinstance(response.context['form'], RegistrationForm)
 
 
@@ -100,8 +103,49 @@ def test_logout_get_view(user):
     assert 302 == response.status_code
 
 
-# @pytest.mark.django_db
-# def test_profile_get(user):
+@pytest.mark.django_db
+def test_profile_get(user):
+    client = Client()
+    url = reverse('profile')
+    client.force_login(user)
+    response = client.get(url)
+    assert 200 == response.status_code
+    assert isinstance(response.context['form'], UserUpdateForm)
+
+
+@pytest.mark.django_db
+def test_profile_post(user):
+    data = {
+        'username': 'name1',
+        'first_name': 'test',
+        'last_name': 'test',
+        'email': 'test@email.com',
+        'pesel': '2147483647',
+        'birth_date': '2022-11-28',
+        'father_name': 'test',
+        'mother_name': 'test',
+        'family_name': 'test',
+        'group': '',
+        'position': 'test',
+    }
+    client = Client()
+    url = reverse('profile')
+    client.force_login(user)
+    response = client.post(url, data)
+    assert 302 == response.status_code
+    assert len(User.objects.all()) != 0
+
+@pytest.mark.django_db
+def test_vacationDetail_view(user, vacations):
+    client = Client()
+    url = reverse('vacation-detail')
+    client.force_login(user)
+    response = client.get(url)
+    persons_context = response.context['vacations']
+    assert persons_context.count() == len(vacations)
+    # for p in vacations:
+    #     assert p in persons_context
+
 # @pytest.mark.django_db
 # def test_create_room_get_view(user):
 #     client = Client()

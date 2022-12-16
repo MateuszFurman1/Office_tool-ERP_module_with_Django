@@ -7,9 +7,13 @@ from office_tool_app.models import Delegation, Vacation, MedicalLeave, AddressHo
 def users():
     name_lst = ['Tadeusz', 'Marek', 'Janusz', 'Franciszek', 'Julius']
     lst = []
-    for n in range(5):
-        p = User.objects.create(username=name_lst[n-1])
-        lst.append(p)
+    lst.append(User.objects.create(username='Tadeusz'))
+    lst.append(User.objects.create(username='Marek'))
+    lst.append(User.objects.create(username='Janusz'))
+    lst.append(User.objects.create(username='Franciszek'))
+    lst.append(User.objects.create(username='Julius'))
+    lst.append(User.objects.create(username='Julka'))
+    lst.append(User.objects.create(username='Adrian'))
     return lst
 
 
@@ -34,7 +38,7 @@ def vacations(users):
     today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = Vacation.objects.create(employee=users[n-1], replacement=users[-1], vacation_from=n, vacation_to=today,
+        p = Vacation.objects.create(employee=users[n], replacement=users[n+1], vacation_from=today, vacation_to=today,
                                     status='pending')
         lst.append(p)
     return lst

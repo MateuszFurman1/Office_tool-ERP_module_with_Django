@@ -136,15 +136,15 @@ def test_profile_post(user):
     assert len(User.objects.all()) != 0
 
 @pytest.mark.django_db
-def test_vacationDetail_view(user, vacations):
+def test_vacationDetail_view(users, vacations):
     client = Client()
     url = reverse('vacation-detail')
-    client.force_login(user)
+    client.force_login(users[0])
     response = client.get(url)
-    persons_context = response.context['vacations']
-    assert persons_context.count() == len(vacations)
-    # for p in vacations:
-    #     assert p in persons_context
+    vacation_context = response.context['vacations_today']
+    assert vacation_context.count() == len(vacations)
+    # for m in vacations:
+    #     assert m in movie
 
 # @pytest.mark.django_db
 # def test_create_room_get_view(user):

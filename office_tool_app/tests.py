@@ -1,11 +1,13 @@
 from datetime import date
+from datetime import datetime
 import pytest
-from office_tool_app.models import User
+from office_tool_app.models import User, Vacation, Delegation, MedicalLeave
 from django.test import Client
 from django.urls import reverse
 
 from office_tool_app.form import RegistrationForm, LoginForm, \
-    AddressHomeForm, AddressCoreForm, UserUpdateForm
+    AddressHomeForm, AddressCoreForm, UserUpdateForm, VacationForm, \
+    DelegationForm, MedicalLeaveForm
 
 
 @pytest.mark.django_db
@@ -135,6 +137,8 @@ def test_profile_post(user):
     assert 302 == response.status_code
     assert len(User.objects.all()) != 0
 
+#Nie creationVacation post oraz nie zrobiłem
+# dla vacation detail, vacation accept, vaccation reject
 @pytest.mark.django_db
 def test_vacationDetail_view(users, vacations):
     client = Client()
@@ -143,8 +147,129 @@ def test_vacationDetail_view(users, vacations):
     response = client.get(url)
     vacation_context = response.context['vacations_today']
     assert vacation_context.count() == len(vacations)
-    # for m in vacations:
-    #     assert m in movie
+    for m in vacations:
+        assert m in vacation_context
+
+
+@pytest.mark.django_db
+def test_createVacation_view(user):
+    client = Client()
+    url = reverse('create-vacation')
+    client.force_login(user)
+    response = client.get(url)
+    assert 200 == response.status_code
+    form = response.context['form']
+    assert isinstance(form, VacationForm)
+
+#Nie creationVacation post oraz nie zrobiłem
+# dla vacation detail, vacation accept, vaccation reject
+@pytest.mark.django_db
+def test_createVacation_post_view(users):
+    today = str(datetime.now().date())
+    data = {
+        'replacement': users[1],
+        'vacation_from': today,
+        'vacation_to': today,
+        'user': users[0]
+    }
+    client = Client()
+    url = reverse('create-vacation')
+    client.force_login(users[0])
+    response = client.post(url, data)
+    assert 302 == response.status_code
+    assert Vacation.objects.get(employee=users[0])
+
+
+@pytest.mark.django_db
+def test_delegationDetail_view(users, delegations):
+    client = Client()
+    url = reverse('delegation-detail')
+    client.force_login(users[0])
+    response = client.get(url)
+    delegation_context = response.context['delegations_today']
+    assert delegation_context.count() == len(delegations)
+    for m in delegations:
+        assert m in delegation_context
+
+
+@pytest.mark.django_db
+def test_createDelegation_view(user):
+    client = Client()
+    url = reverse('create-delegation')
+    client.force_login(user)
+    response = client.get(url)
+    assert 200 == response.status_code
+    form = response.context['form']
+    assert isinstance(form, DelegationForm)
+
+#Nie creationVacation post oraz nie zrobiłem
+# dla vacation detail, vacation accept, vaccation reject
+@pytest.mark.django_db
+def test_createDelegation_post_view(users):
+    today = str(datetime.now().date())
+    data = {
+        'start_date': today,
+        'end_date': today,
+        'delegation_country': 'DE',
+        'user': users[0]
+    }
+    client = Client()
+    url = reverse('create-delegation')
+    client.force_login(users[0])
+    response = client.post(url, data)
+    assert 302 == response.status_code
+    assert Delegation.objects.get(employee=users[0])
+
+
+@pytest.mark.django_db
+def test_medicalLeave_view(users, medical_leaves):
+    client = Client()
+    url = reverse('medical-leave')
+    client.force_login(users[0])
+    response = client.get(url)
+    medical_context = response.context['medicals']
+    assert medical_context.count() == len(medical_leaves)
+    for m in medical_leaves:
+        assert m in medical_context
+
+
+@pytest.mark.django_db
+def test_createMedicalLeave_view(user_with_permission):
+    client = Client()
+    url = reverse('create-medical', args=(user_with_permission.username, ))
+    client.force_login(user_with_permission)
+    response = client.get(url)
+    assert 200 == response.status_code
+    form = response.context['form']
+    assert isinstance(form, MedicalLeaveForm)
+
+#Nie creationVacation post oraz nie zrobiłem
+# dla vacation detail, vacation accept, vaccation reject
+@pytest.mark.django_db
+def test_createMedicalLeave_post_view(user_with_permission):
+    today = str(datetime.now().date())
+    data = {
+        'from_date': today,
+        'to_date': today,
+    }
+    client = Client()
+    url = reverse('create-medical', args=(user_with_permission.username, ))
+    client.force_login(user_with_permission)
+    response = client.post(url, data)
+    assert 302 == response.status_code
+    assert MedicalLeave.objects.get(employee=user_with_permission)
+
+
+@pytest.mark.django_db
+def test_medicalLeave_view(users, medical_leaves):
+    client = Client()
+    url = reverse('delete-medical', args=(medical_leaves[0].pk, ))
+    client.force_login(users[0])
+    response = client.get(url)
+    medical_context = response.context['medical_leave']
+    print(medical_context)
+    assert 200 == response.status_code
+    assert medical_leaves[0] == medical_context
 
 # @pytest.mark.django_db
 # def test_create_room_get_view(user):

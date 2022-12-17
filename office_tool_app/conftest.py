@@ -1,19 +1,15 @@
 from datetime import datetime
 import pytest
+from django.contrib.auth.models import Permission
 from office_tool_app.models import Delegation, Vacation, MedicalLeave, AddressHome, AddressCore, User, Group
 
 
 @pytest.fixture
 def users():
-    name_lst = ['Tadeusz', 'Marek', 'Janusz', 'Franciszek', 'Julius']
+    name_lst = ['Tadeusz', 'Marek', 'Janusz', 'Franciszek', 'Julius', 'Adrian']
     lst = []
-    lst.append(User.objects.create(username='Tadeusz'))
-    lst.append(User.objects.create(username='Marek'))
-    lst.append(User.objects.create(username='Janusz'))
-    lst.append(User.objects.create(username='Franciszek'))
-    lst.append(User.objects.create(username='Julius'))
-    lst.append(User.objects.create(username='Julka'))
-    lst.append(User.objects.create(username='Adrian'))
+    for user in range(6):
+        lst.append(User.objects.create(username=name_lst[user-1]))
     return lst
 
 
@@ -23,11 +19,19 @@ def user():
 
 
 @pytest.fixture
+def user_with_permission():
+    u = User.objects.create(username='Janusz')
+    permission = Permission.objects.get(codename='can_manage_employees')
+    u.user_permissions.add(permission)
+    return u
+
+
+@pytest.fixture
 def delegations(users):
     today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = Delegation.objects.create(employee=users[n-1], start_date=n, end_date=today, delegation_country='DE',
+        p = Delegation.objects.create(employee=users[n-1], start_date=today, end_date=today, delegation_country='DE',
                                       status='pending')
         lst.append(p)
     return lst
@@ -49,7 +53,7 @@ def medical_leaves(users):
     today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = MedicalLeave.objects.create(employee=users[n-1], from_date=n, to_date=today)
+        p = MedicalLeave.objects.create(employee=users[n-1], from_date=today, to_date=today)
         lst.append(p)
     return lst
 

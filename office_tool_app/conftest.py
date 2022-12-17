@@ -1,12 +1,13 @@
 from datetime import datetime
 import pytest
 from django.contrib.auth.models import Permission
-from office_tool_app.models import Delegation, Vacation, MedicalLeave, AddressHome, AddressCore, User, Group
+from office_tool_app.models import Delegation, Vacation, MedicalLeave, \
+    AddressHome, AddressCore, User, Group, Messages
 
 
 @pytest.fixture
 def users():
-    name_lst = ['Tadeusz', 'Marek', 'Janusz', 'Franciszek', 'Julius', 'Adrian']
+    name_lst = ['Arkadiusz', 'Marek', 'Janusz', 'Franciszek', 'Julius', 'Adrian']
     lst = []
     for user in range(6):
         lst.append(User.objects.create(username=name_lst[user-1]))
@@ -31,7 +32,7 @@ def delegations(users):
     today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = Delegation.objects.create(employee=users[n-1], start_date=today, end_date=today, delegation_country='DE',
+        p = Delegation.objects.create(employee=users[0], start_date=today, end_date=today, delegation_country='DE',
                                       status='pending')
         lst.append(p)
     return lst
@@ -42,7 +43,7 @@ def vacations(users):
     today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = Vacation.objects.create(employee=users[n], replacement=users[n+1], vacation_from=today, vacation_to=today,
+        p = Vacation.objects.create(employee=users[0], replacement=users[n+1], vacation_from=today, vacation_to=today,
                                     status='pending')
         lst.append(p)
     return lst
@@ -53,7 +54,18 @@ def medical_leaves(users):
     today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = MedicalLeave.objects.create(employee=users[n-1], from_date=today, to_date=today)
+        p = MedicalLeave.objects.create(employee=users[0], from_date=today, to_date=today)
+        lst.append(p)
+    return lst
+
+
+@pytest.fixture
+def message(users):
+    today = str(datetime.now().date())
+    lst = []
+    for n in range(5):
+        p = Messages.objects.create(from_employee=users[n+1], to_employee=users[0],
+                                    sending_date=today, message='test')
         lst.append(p)
     return lst
 

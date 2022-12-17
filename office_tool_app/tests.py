@@ -86,7 +86,6 @@ def test_login_post_view_invalid_with_log():
         're_password': '123'
     }
     response = client.post(url, data)
-    print(User.objects.all())
     assert response.status_code == 200
     assert isinstance(response.context['form'], LoginForm)
     assert len(User.objects.all()) == 0
@@ -164,7 +163,6 @@ def test_createVacation_post_view(users):
         'replacement': users[1],
         'vacation_from': today,
         'vacation_to': today,
-        'user': users[0]
     }
     client = Client()
     url = reverse('create-vacation')
@@ -172,6 +170,48 @@ def test_createVacation_post_view(users):
     response = client.post(url, data)
     assert 302 == response.status_code
     assert Vacation.objects.get(employee=users[0])
+
+#Błąd!!! permision
+@pytest.mark.django_db
+def test_vacationAccept_view(user_with_permission, vacations):
+    client = Client()
+    url = reverse('accept-vacation', args=(vacations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.get(url)
+    vacation_context = response.context['vacation']
+    print(vacation_context)
+    assert 200 == response.status_code
+    assert vacation_context == vacations[0]
+
+
+@pytest.mark.django_db
+def test_vacationAccept_post_view(user_with_permission, vacations):
+    client = Client()
+    url = reverse('accept-vacation', args=(vacations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.post(url)
+    assert 200 == response.status_code
+
+#Błąd!!! persmision
+@pytest.mark.django_db
+def test_vacationReject_view(user_with_permission, vacations):
+    client = Client()
+    url = reverse('reject-vacation', args=(vacations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.get(url)
+    vacation_context = response.context['vacation']
+    print(vacation_context)
+    assert 200 == response.status_code
+    assert vacation_context == vacations[0]
+
+#Błąd!!! persmision
+@pytest.mark.django_db
+def test_vacationReject_post_view(user_with_permission, vacations):
+    client = Client()
+    url = reverse('reject-vacation', args=(vacations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.post(url)
+    assert 200 == response.status_code
 
 
 @pytest.mark.django_db
@@ -204,7 +244,6 @@ def test_createDelegation_post_view(users):
         'start_date': today,
         'end_date': today,
         'delegation_country': 'DE',
-        'user': users[0]
     }
     client = Client()
     url = reverse('create-delegation')
@@ -212,6 +251,47 @@ def test_createDelegation_post_view(users):
     response = client.post(url, data)
     assert 302 == response.status_code
     assert Delegation.objects.get(employee=users[0])
+
+
+#Błąd!!! permision
+@pytest.mark.django_db
+def test_vacationAccept_view(user_with_permission, delegations):
+    client = Client()
+    url = reverse('accept-delegation', args=(delegations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.get(url)
+    delegation_context = response.context['vacation']
+    assert 200 == response.status_code
+    assert delegation_context == delegations[0]
+
+
+@pytest.mark.django_db
+def test_delegationAccept_post_view(user_with_permission, delegations):
+    client = Client()
+    url = reverse('accept-delegation', args=(delegations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.post(url)
+    assert 200 == response.status_code
+
+#Błąd!!! persmision
+@pytest.mark.django_db
+def test_delegationReject_view(user_with_permission, delegations):
+    client = Client()
+    url = reverse('reject-delegation', args=(delegations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.get(url)
+    delegation_context = response.context['delegation']
+    assert 200 == response.status_code
+    assert delegation_context == delegations[0]
+
+#Błąd!!! persmision
+@pytest.mark.django_db
+def test_delegationnReject_post_view(user_with_permission, delegations):
+    client = Client()
+    url = reverse('reject-delegation', args=(delegations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.post(url)
+    assert 200 == response.status_code
 
 
 @pytest.mark.django_db
@@ -225,7 +305,7 @@ def test_medicalLeave_view(users, medical_leaves):
     for m in medical_leaves:
         assert m in medical_context
 
-#Błąd!!!!
+#Błąd!!!! permision
 @pytest.mark.django_db
 def test_createMedicalLeave_view(user_with_permission):
     client = Client()
@@ -236,7 +316,7 @@ def test_createMedicalLeave_view(user_with_permission):
     form = response.context['form']
     assert isinstance(form, MedicalLeaveForm)
 
-#Błąd!!!!
+#Błąd!!!! permision
 @pytest.mark.django_db
 def test_createMedicalLeave_post_view(user_with_permission):
     today = str(datetime.now().date())
@@ -284,7 +364,7 @@ def test_messages_view(users, message):
     assert 200 == response.status_code
     assert len(message) == messages_context.count()
 
-#Błąd!!
+#Błąd!!! permision
 @pytest.mark.django_db
 def test_Manage_view(user_with_permission):
     client = Client()
@@ -293,7 +373,7 @@ def test_Manage_view(user_with_permission):
     response = client.get(url)
     assert 200 == response.status_code
 
-#Błąd!!!
+#Błąd!!! permision
 @pytest.mark.django_db
 def test_ManageDetail_view(user_with_permission):
     client = Client()

@@ -21,7 +21,7 @@ def user():
 
 @pytest.fixture
 def user_with_permission():
-    u = User.objects.create(username='Janusz')
+    u = User.objects.create(username='Dariusz')
     permission = Permission.objects.get(codename='can_manage_employees')
     u.user_permissions.add(permission)
     return u

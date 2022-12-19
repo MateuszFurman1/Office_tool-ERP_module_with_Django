@@ -11,7 +11,7 @@ from office_tool_app.form import RegistrationForm, LoginForm, \
 
 
 @pytest.mark.django_db
-def test_Home_view(user):
+def test_Home_view(user, vacations):
     client = Client()
     client.force_login(user)
     url = reverse('home')
@@ -162,7 +162,7 @@ def test_createVacation_post_view(users):
     data = {
         'replacement': users[1],
         'vacation_from': today,
-        'vacation_to': today,
+        'vacation_to': today
     }
     client = Client()
     url = reverse('create-vacation')

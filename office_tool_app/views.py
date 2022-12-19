@@ -221,6 +221,11 @@ class VacationCreateView(LoginRequiredMixin, View):
             all_vacations = Vacation.objects.filter(employee=user)
             vacation_from = form.cleaned_data['vacation_from']
             vacation_to = form.cleaned_data['vacation_to']
+            for one_delegations in all_delegations:
+                if (one_delegations.start_date <= start_date) and (one_delegations.end_date >= start_date) or \
+                        (one_delegations.start_date <= end_date) and (one_delegations.end_date >= end_date):
+                    messages.error(request, "Delegation in this date already exist!")
+                    return render(request, 'office_tool_app/form2.html', ctx)
             for one_vacation in all_vacations:
                 if (one_vacation.vacation_from <= vacation_from) and (one_vacation.vacation_to >= vacation_from) or \
                         (one_vacation.vacation_from <= vacation_to) and (one_vacation.vacation_to >= vacation_to):
@@ -368,6 +373,15 @@ class DelegationCreateView(LoginRequiredMixin, View):
             all_delegations = Delegation.objects.filter(employee=user)
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
+            vacation.employee = user
+            all_vacations = Vacation.objects.filter(employee=user)
+            vacation_from = form.cleaned_data['vacation_from']
+            vacation_to = form.cleaned_data['vacation_to']
+            for one_vacation in all_vacations:
+                if (one_vacation.vacation_from <= vacation_from) and (one_vacation.vacation_to >= vacation_from) or \
+                        (one_vacation.vacation_from <= vacation_to) and (one_vacation.vacation_to >= vacation_to):
+                    messages.error(request, "Vacation in this date already exist!")
+                    return render(request, 'office_tool_app/form2.html', ctx)
             for one_delegations in all_delegations:
                 if (one_delegations.start_date <= start_date) and (one_delegations.end_date >= start_date) or \
                         (one_delegations.start_date <= end_date) and (one_delegations.end_date >= end_date):

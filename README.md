@@ -12,8 +12,8 @@
 
 ## How to run
 * clone repository
-* pip install -r requirements.txt
-* type in terminal python manage.py runserver
+* terminal: pip install -r requirements.txt
+* terminal: python manage.py runserver
 * go to: http://127.0.0.1:8000/
 
 ## Requirements

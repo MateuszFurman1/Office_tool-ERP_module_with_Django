@@ -27,6 +27,7 @@ class Group(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class AddressHome(models.Model):
     employee = models.OneToOneField(User, related_name="address_home_employee", on_delete=models.CASCADE)
     city = models.CharField(max_length=128)

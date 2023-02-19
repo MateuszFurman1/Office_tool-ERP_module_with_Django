@@ -1,23 +1,20 @@
-{% extends "office_tool_app/Base2col.html" %}
-{% load static %}
+{% extends "office_tool_app/Base2col.html" %} {% load static %} {% block content%}
+<div class="card mt-5 border border-dark" style="width: auto">
+  <div class="card-body">
+    <ul>
+      <h5 class="card-title">Your messages:</h5>
 
-{% block content %}
-        <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-
-        <ul>
-        <h5 class="card-title">Your messages:</h5>
-
-            {% for message in messages %}
-        <p class="card-text border-white" >
-               <li><h6>from: {{ message.from_employee }}</h6></li>
-               Text: {{ message.message }}
-               <small>send: {{ message.sending_date }}</small>
-          {% empty %}
-                <li>No messages</li>
-          {% endfor %}
-        </ul>
-        </div>
-    </div>
-    <br>
-    {% endblock %}
+      {% for message in messages %}
+      <p class="card-text border-white">
+        <li><h6>from: {{ message.from_employee }}</h6></li>
+        Text: {{ message.message }}
+        <small>send: {{ message.sending_date }}</small>
+        {% empty %}
+        <li>No messages</li>
+        {% endfor %}
+      </p>
+    </ul>
+  </div>
+</div>
+<br />
+{% endblock %}

@@ -10,6 +10,8 @@
                <h6> Group name: {{ group_manage.name }} <br></h6>
         Group members: {% for user in group_manage_users %}
             <li>{{ user }}</li>
+        {% empty %}
+                <li>No members in your group:</li>
             {% endfor %}
         </ul>
         </p>

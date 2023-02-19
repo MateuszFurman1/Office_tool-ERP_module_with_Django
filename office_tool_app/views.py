@@ -30,10 +30,14 @@ class HomeView(LoginRequiredMixin, View):
             today = str(datetime.now().date())
             group = user.group
             # group_users = group.user_set.all()
-            group_users = User.objects.filter(group=group).exclude(first_name=user.first_name)
-            vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
-            messages = user.messages_to_employee.all().order_by('-sending_date')[:5]
-            delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
+            group_users = User.objects.filter(
+                group=group).exclude(first_name=user.first_name)
+            vacations = user.vacation_employee.filter(
+                status='pending').filter(vacation_from__gte=today)
+            messages = user.messages_to_employee.all().order_by(
+                '-sending_date')[:5]
+            delegations = user.delegation_employee.filter(
+                status='pending').filter(start_date__gte=today)
 
             ctx = {
                 'group_users': group_users,
@@ -87,6 +91,7 @@ class LoginView(View):
     If password is wrong:
     return form again
     '''
+
     def get(self, request):
         form = LoginForm()
         page = 'login'
@@ -119,6 +124,7 @@ class LogoutView(View):
     Logout user. After logout. Display success message
     return redirect to login views
     '''
+
     def get(self, request):
         logout(request)
         messages.success(request, "Logout successfully")
@@ -178,9 +184,12 @@ class VacationDetailView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         today = str(datetime.now().date())
-        vacations_today = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
-        vacations_past = user.vacation_employee.filter(status='accepted').filter(vacation_from__lte=today)[:5]
-        vacations_future = user.vacation_employee.filter(status='accepted').filter(vacation_from__gt=today)
+        vacations_today = user.vacation_employee.filter(
+            status='pending').filter(vacation_from__gte=today)
+        vacations_past = user.vacation_employee.filter(
+            status='accepted').filter(vacation_from__lte=today)[:5]
+        vacations_future = user.vacation_employee.filter(
+            status='accepted').filter(vacation_from__gt=today)
         ctx = {
             'vacations_today': vacations_today,
             'vacations_past': vacations_past,
@@ -199,6 +208,7 @@ class VacationCreateView(LoginRequiredMixin, View):
     if success return redirect to vacation detail view
     if error return form again
     '''
+
     def get(self, request):
         user = request.user
         form = VacationForm()
@@ -218,21 +228,27 @@ class VacationCreateView(LoginRequiredMixin, View):
         if form.is_valid():
             vacation = form.save(commit=False)
             vacation.employee = user
+            all_delegations = Delegation.objects.filter(employee=user)
             all_vacations = Vacation.objects.filter(employee=user)
             vacation_from = form.cleaned_data['vacation_from']
             vacation_to = form.cleaned_data['vacation_to']
+            start_date = form.cleaned_data['vacation_from']
+            end_date = form.cleaned_data['vacation_to']
             for one_delegations in all_delegations:
                 if (one_delegations.start_date <= start_date) and (one_delegations.end_date >= start_date) or \
                         (one_delegations.start_date <= end_date) and (one_delegations.end_date >= end_date):
-                    messages.error(request, "Delegation in this date already exist!")
+                    messages.error(
+                        request, "Delegation in this date already exist!")
                     return render(request, 'office_tool_app/form2.html', ctx)
             for one_vacation in all_vacations:
                 if (one_vacation.vacation_from <= vacation_from) and (one_vacation.vacation_to >= vacation_from) or \
                         (one_vacation.vacation_from <= vacation_to) and (one_vacation.vacation_to >= vacation_to):
-                    messages.error(request, "Vacation in this date already exist!")
+                    messages.error(
+                        request, "Vacation in this date already exist!")
                     return render(request, 'office_tool_app/form2.html', ctx)
             if request.user == vacation.replacement:
-                messages.error(request, "Replacement employee validation error!")
+                messages.error(
+                    request, "Replacement employee validation error!")
                 return render(request, 'office_tool_app/form2.html', ctx)
             vacation.status = 'pending'
             vacation.save()
@@ -329,9 +345,12 @@ class DelegationDetailView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         today = str(datetime.now().date())
-        delegations_today = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
-        delegations_past = user.delegation_employee.filter(status='accepted').filter(start_date__lte=today)[:5]
-        delegations_future = user.delegation_employee.filter(status='accepted').filter(start_date__gt=today)
+        delegations_today = user.delegation_employee.filter(
+            status='pending').filter(start_date__gte=today)
+        delegations_past = user.delegation_employee.filter(
+            status='accepted').filter(start_date__lte=today)[:5]
+        delegations_future = user.delegation_employee.filter(
+            status='accepted').filter(start_date__gt=today)
         ctx = {
             'delegations_today': delegations_today,
             'delegations_past': delegations_past,
@@ -375,17 +394,19 @@ class DelegationCreateView(LoginRequiredMixin, View):
             end_date = form.cleaned_data['end_date']
             vacation.employee = user
             all_vacations = Vacation.objects.filter(employee=user)
-            vacation_from = form.cleaned_data['vacation_from']
-            vacation_to = form.cleaned_data['vacation_to']
+            vacation_from = form.cleaned_data['start_date']
+            vacation_to = form.cleaned_data['end_date']
             for one_vacation in all_vacations:
                 if (one_vacation.vacation_from <= vacation_from) and (one_vacation.vacation_to >= vacation_from) or \
                         (one_vacation.vacation_from <= vacation_to) and (one_vacation.vacation_to >= vacation_to):
-                    messages.error(request, "Vacation in this date already exist!")
+                    messages.error(
+                        request, "Vacation in this date already exist!")
                     return render(request, 'office_tool_app/form2.html', ctx)
             for one_delegations in all_delegations:
                 if (one_delegations.start_date <= start_date) and (one_delegations.end_date >= start_date) or \
                         (one_delegations.start_date <= end_date) and (one_delegations.end_date >= end_date):
-                    messages.error(request, "Delegation in this date already exist!")
+                    messages.error(
+                        request, "Delegation in this date already exist!")
                     return render(request, 'office_tool_app/form2.html', ctx)
             delegation.status = 'pending'
             delegation.save()
@@ -525,7 +546,8 @@ class MedicalLeaveCreateView(PermissionRequiredMixin, View):
             for one_medical_leave in all_medical_leave:
                 if (one_medical_leave.from_date <= from_date) and (one_medical_leave.to_date >= from_date) or \
                         (one_medical_leave.from_date <= to_date) and (one_medical_leave.to_date >= to_date):
-                    messages.error(request, "Medical Leave in this date already exist!")
+                    messages.error(
+                        request, "Medical Leave in this date already exist!")
                     return render(request, 'office_tool_app/form2.html', ctx)
             medical_leave.save()
             return redirect('manage-detail', user.username)
@@ -592,12 +614,14 @@ class ManageView(PermissionRequiredMixin, View):
         group_manage = Group.objects.get(name='manager')
         group_manage_users = group_manage.user_set.all()
         group_users = group.user_set.all()
-        vacations = Vacation.objects.all().filter(employee__group=group).filter(vacation_from__gte=today)
+        vacations = Vacation.objects.all().filter(
+            employee__group=group).filter(vacation_from__gte=today)
         vacations_list = []
         for i in vacations:
             if i.employee not in vacations_list:
                 vacations_list.append(i.employee)
-        delegations = Delegation.objects.all().filter(employee__group=group).filter(start_date__gte=today)
+        delegations = Delegation.objects.all().filter(
+            employee__group=group).filter(start_date__gte=today)
         delegations_list = []
         for i in delegations:
             if i.employee not in delegations_list:
@@ -633,11 +657,15 @@ class ManageDetailView(PermissionRequiredMixin, View):
         group = user.group
         group_users = group.user_set.all()
         medicals = user.medical_employee.all()[:5]
-        vacations = user.vacation_employee.filter(status='pending').filter(vacation_from__gte=today)
+        vacations = user.vacation_employee.filter(
+            status='pending').filter(vacation_from__gte=today)
         messages = user.messages_to_employee.all().order_by('-sending_date')
-        delegations = user.delegation_employee.filter(status='pending').filter(start_date__gte=today)
-        vacations_accepted = user.vacation_employee.filter(status='accepted').filter(vacation_from__gte=today)[:5]
-        delegations_accepted = user.delegation_employee.filter(status='accepted').filter(start_date__gte=today)[:5]
+        delegations = user.delegation_employee.filter(
+            status='pending').filter(start_date__gte=today)
+        vacations_accepted = user.vacation_employee.filter(
+            status='accepted').filter(vacation_from__gte=today)[:5]
+        delegations_accepted = user.delegation_employee.filter(
+            status='accepted').filter(start_date__gte=today)[:5]
 
         ctx = {
             'group_users': group_users,

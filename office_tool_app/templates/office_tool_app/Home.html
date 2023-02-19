@@ -1,82 +1,82 @@
-{% extends "office_tool_app/Base.html" %}
-{% load static %}
-
-{% block content %}
+{% extends "office_tool_app/Base.html" %} {% load static %} {% block content %}
 {% if user.is_authenticated %}
-    <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">Your pending vacations:</h5>
-           <ul>
-            {% for vacation in vacations %}
-        <p class="card-text">
+<div class="card mt-5 border border-dark" style="width: auto">
+  <div class="card-body">
+    <h5 class="card-title">Your pending vacations:</h5>
+    <ul>
+      {% for vacation in vacations %}
+      <p class="card-text">
         <li>from: {{ vacation.vacation_from }}</li>
-        <li> to: {{ vacation.vacation_to }}</li>
+        <li>to: {{ vacation.vacation_to }}</li>
         <li>status: {{ vacation.status }}</li>
         <li>replacement employee: {{ vacation.replacement }}</li>
-            {% empty %}
-                <li>No pending vacations requests</li>
-          {% endfor %}
-        </ul>
-        <a href="{% url 'vacation-detail' %}" class="btn btn-primary text-white">Go to</a>
-        </div>
-    </div>
+        {% empty %}
+        <li>No pending vacations requests</li>
+        {% endfor %}
+      </p>
+    </ul>
 
-    <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">Your pending delegations:</h5>
-            <ul>
-            {% for delegation in delegations %}
-        <p class="card-text">
-               <h6> Delegation to: {{ delegation.delegation_country }} <br></h6>
-        <li>start date: {{ delegation.start_date }}</li>
-        <li>end date: {{ delegation.end_date }}</li>
-        <li>status: {{ delegation.status }}</li>
-                {% empty %}
-                <li>No pending delegations requests</li>
-          {% endfor %}
-        </ul>
-                <a href="{% url 'delegation-detail' %}" class="btn btn-primary text-white">Go to</a>
-        </div>
-    </div>
-    <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">Members from your team:</h5>
-        <p class="card-text">
-        <ul>
-            {% for user in group_users %}
-            <li>{{ user.first_name }}</li>
-            {% empty %}
-                <li>No members in your team</li>
-            {% endfor %}
-        </ul>
-        </p>
-        </div>
-    </div>
+    <a href="{% url 'vacation-detail' %}" class="btn btn-primary text-white"
+      >Go to</a
+    >
+  </div>
+</div>
+
+<div class="card mt-5 border border-dark" style="width: auto">
+  <div class="card-body">
+    <h5 class="card-title">Your pending delegations:</h5>
+    <ul>
+      {% for delegation in delegations %}
+      <p class="card-text"></p>
+      <h6>Delegation to: {{ delegation.delegation_country }} <br /></h6>
+      <li>start date: {{ delegation.start_date }}</li>
+      <li>end date: {{ delegation.end_date }}</li>
+      <li>status: {{ delegation.status }}</li>
+      {% empty %}
+      <li>No pending delegations requests</li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'delegation-detail' %}" class="btn btn-primary text-white"
+      >Go to</a
+    >
+  </div>
+</div>
+<div class="card mt-5 border border-dark" style="width: auto">
+  <div class="card-body">
+    <h5 class="card-title">Members from your team:</h5>
+    <ul>
+      {% for user in group_users %}
+      <p class="card-text">
+        <li>{{ user.first_name }}</li>
+        {% empty %}
+        <li>No members in your team</li>
+        {% endfor %}
+      </p>
+    </ul>
+  </div>
+</div>
 {% else %}
-    <div>
+<div>
+  <a href="{% url 'login' %}" class="nav-link px-0 align-middle"
+    >Please login</a
+  >
+</div>
+{% endif %} {% endblock %} {% block content2 %}
+<div class="card mt-5 text-white bg-dark" style="width: auto">
+  <div class="card-body">
+    <ul>
+      <h5 class="card-title">Your messages:</h5>
 
-            <a href="{% url 'login' %}" class="nav-link px-0 align-middle">Please login</a>
-
-    </div>
-{% endif %}
+      {% for message in messages %}
+      <p class="card-text border-white">
+        <li><h6>from: {{ message.from_employee }}</h6></li>
+        Text: {{ message.message }}
+        <small>send: {{ message.sending_date }}</small>
+        {% empty %}
+        <li>No messages</li>
+        {% endfor %}
+      </p>
+    </ul>
+  </div>
+</div>
 {% endblock %}
-
-    {% block content2 %}
-        <div class="card mt-5 text-white bg-dark" style="width: auto;" >
-        <div class="card-body">
-
-        <ul>
-        <h5 class="card-title">Your messages:</h5>
-
-            {% for message in messages %}
-        <p class="card-text border-white" >
-               <li><h6>from: {{ message.from_employee }}</h6></li>
-               Text: {{ message.message }}
-               <small>send: {{ message.sending_date }}</small>
-          {% empty %}
-                <li>No messages</li>
-          {% endfor %}
-        </ul>
-        </div>
-    </div>
-    {% endblock %}

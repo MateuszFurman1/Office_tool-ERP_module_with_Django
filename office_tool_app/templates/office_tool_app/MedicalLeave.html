@@ -1,20 +1,18 @@
-{% extends "office_tool_app/Base2col.html" %}
-{% load static %}
+{% extends "office_tool_app/Base2col.html" %} {% load static %} {% block content%}
+<div class="card mt-5 border border-dark" style="width: auto">
+  <div class="card-body">
+    <h5 class="card-title">Your Medical leave:</h5>
+    <ul>
+      {% for medical in medicals %}
+      <p class="card-text">
+        <li>Medical leave from: <b>{{ medical.from_date }}</b></li>
+        <li>Medical leave to: <b> {{ medical.to_date }}</b></li>
+        {% empty %}
+        <li>No Medical leave yet</li>
+        {% endfor %}
+      </p>
+    </ul>
+  </div>
+</div>
 
-{% block content %}
-    <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">Your Medical leave:</h5>
-        <ul>
-            {% for medical in medicals %}
-        <p class="card-text">
-                <li>Medical leave from: <b>{{ medical.from_date }}</b> </li>
-                <li>Medical leave to: <b> {{ medical.to_date }}</b> </li>
-            {% empty %}
-                <li>No Medical leave yet</li>
-          {% endfor %}
-        </ul>
-       </div>
-    </div>
-    
 {% endblock %}

@@ -1,56 +1,54 @@
-{% extends "office_tool_app/Base2col.html" %}
-{% load static %}
+{% extends "office_tool_app/Base2col.html" %} {% load static %} {% block content%}
+<div class="card mt-5 border border-dark" style="width: auto">
+  <div class="card-body">
+    <h5 class="card-title">Your group members:</h5>
+    <p class="card-text"></p>
+    <ul>
+      <h6>Group name: {{ group_manage.name }} <br /></h6>
+      Group members: {% for user in group_manage_users %}
+      <li>{{ user }}</li>
+      {% empty %}
+      <li>No members in your group:</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 
-{% block content %}
-    <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">Your group members:</h5>
-        <p class="card-text">
-        <ul>
-               <h6> Group name: {{ group_manage.name }} <br></h6>
-        Group members: {% for user in group_manage_users %}
-            <li>{{ user }}</li>
-        {% empty %}
-                <li>No members in your group:</li>
-            {% endfor %}
-        </ul>
-        </p>
-       </div>
-    </div>
+<div class="card mt-5 border border-dark" style="width: auto">
+  <div class="card-body">
+    <h5 class="card-title">
+      Your subordinates members on vacation/delegations today:
+    </h5>
+    <p class="card-text"></p>
+    <ul>
+      <h6>Vacation:</h6>
+      {% for vacation in vacations_list %}
+      <li>{{ vacation }}</li>
+      {% empty %}
+      <li>No members on vacations:</li>
+      {% endfor %}
+      <br />
+      <h6>Delegations:</h6>
+      {% for delegation in delegations_list %}
+      <li>{{ delegation}}</li>
+      {% empty %}
+      <li>No members on delegations:</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 
-    <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">Your subordinates members on vacation/delegations:</h5>
-        <p class="card-text">
-        <ul>
-            <h6>Vacation:</h6> {% for vacation in vacations_list %}
-                <li>{{ vacation }}</li>
-            {% empty %}
-                <li>No members on vacations:</li>
-                        {% endfor %}
-                        <br>
-            <h6>Delegations:</h6> {% for delegation in delegations_list %}
-                <li>{{ delegation}}</li>
-            {% empty %}
-                <li>No members on delegations:</li>
-                        {% endfor %}
-        </ul>
-        </p>
-       </div>
-    </div>
-
-    <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">Your subordinates members:</h5>
-        <p class="card-text">
-            {% for user in group_users %}
-                <li><a href="{% url 'manage-detail' user.username %}">
-                    {{ user }}</a></li>
-                {% empty %}
-                <li>No subordinates members:</li>
-            {% endfor %}
-        </p>
-       </div>
-    </div>
+<div class="card mt-5 border border-dark" style="width: auto">
+  <div class="card-body">
+    <h5 class="card-title">Your subordinates members:</h5>
+    <p class="card-text">
+      {% for user in group_users %}
+      <li><a href="{% url 'manage-detail' user.username %}"> {{ user }}</a></li>
+      {% empty %}
+      <li>No subordinates members:</li>
+      {% endfor %}
+    </p>
+  </div>
+</div>
 
 {% endblock %}

@@ -4,7 +4,7 @@
   style="min-height: 65vh"
 >
   <h1>
-    <div class="border-bottom mb-4">{{ username }} profile information:</div>
+    <div class="border-bottom mb-4">{{ username }} Profile information:</div>
   </h1>
   <form method="POST">
     {% csrf_token %} {{ form|crispy }} Correspondence Address: <br />

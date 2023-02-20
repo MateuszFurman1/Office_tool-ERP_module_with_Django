@@ -43,8 +43,8 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'office_tool_app.User'
 AUTHENTICATION_BACKENDS = (
-        'django.contrib.auth.backends.ModelBackend',
-    )
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 
 MIDDLEWARE = [
@@ -90,7 +90,6 @@ DATABASES = {
         'PASSWORD': 'admin',
     }
 }
-
 
 
 # Password validation

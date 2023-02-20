@@ -1,17 +1,22 @@
 from datetime import datetime
+
 import vacation as vacation
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin)
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
 from django.views.generic import DeleteView
 
-from office_tool_app.form import RegistrationForm, LoginForm, UserUpdateForm, AddressHomeForm, \
-    AddressCoreForm, MedicalLeaveForm, DelegationForm, VacationForm
-from office_tool_app.models import User, Group, AddressHome, AddressCore, Vacation, Delegation, MedicalLeave, Messages
+from office_tool_app.form import (AddressCoreForm, AddressHomeForm,
+                                  DelegationForm, LoginForm, MedicalLeaveForm,
+                                  RegistrationForm, UserUpdateForm,
+                                  VacationForm)
+from office_tool_app.models import (AddressCore, AddressHome, Delegation,
+                                    Group, MedicalLeave, Messages, User,
+                                    Vacation)
 
 
 class HomeView(LoginRequiredMixin, View):
@@ -610,8 +615,8 @@ class ManageView(PermissionRequiredMixin, View):
     def get(self, request):
         user = request.user
         today = str(datetime.now().date())
-        group = Group.objects.get(name='employee')
-        group_manage = Group.objects.get(name='manager')
+        group = Group.objects.filter(name='employee').first()
+        group_manage = Group.objects.filter(name='manager').first()
         group_manage_users = group_manage.user_set.all()
         group_users = group.user_set.all()
         vacations = Vacation.objects.all().filter(

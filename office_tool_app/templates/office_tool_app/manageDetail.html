@@ -1,105 +1,120 @@
-{% extends "office_tool_app/Base2col.html" %}
-{% load static %}
-
-{% block content %}
+{% extends "office_tool_app/Base2col.html" %} {% load static %} {% block content%}
 <div class="container">
   <div class="row">
-      <div class="card mt-5 border border-dark" >
-        <div class="card-body">
+    <div class="card mt-5 border border-dark">
+      <div class="card-body">
         <h5 class="card-title">Pending requests:</h5>
         <ul>
-        <h6>Delegations:</h6>
-            {% for delegation in delegations %}
-                <p class="card-text">
-               <h6> Employee: {{ delegation.employee }}</h6>
-                <li>Delegation to: {{ delegation.delegation_country }}</li>
-                <li>start date: {{ delegation.start_date }}</li>
-                <li>end date: {{ delegation.end_date }}</li>
-                <li>status: {{ delegation.status }}</li>
-        <a href="{% url 'accept-delegation' delegation.pk %}" class="btn btn-primary text-white">Accept</a>
-        <a href="{% url 'reject-delegation' delegation.pk %}" class="btn btn-primary text-white">Reject</a>
-            {% empty %}
-                <li>No pending delegation requests</li>
+          <h6>Delegations:</h6>
+          {% for delegation in delegations %}
+          <p class="card-text"></p>
+          <h6>Employee: {{ delegation.employee }}</h6>
+          <li>Delegation to: {{ delegation.delegation_country }}</li>
+          <li>start date: {{ delegation.start_date }}</li>
+          <li>end date: {{ delegation.end_date }}</li>
+          <li>status: {{ delegation.status }}</li>
+          <a
+            href="{% url 'accept-delegation' delegation.pk %}"
+            class="btn btn-primary text-white"
+            >Accept</a>
+          <a
+            href="{% url 'reject-delegation' delegation.pk %}"
+            class="btn btn-primary text-white"
+            >Reject</a>
+          {% empty %}
+          <li>No pending delegation requests</li>
           {% endfor %}
         </ul>
-        <p class="card-text">
+        <p class="card-text"></p>
         <ul>
-        <h6>Vacations:</h6>
-            {% for vacation in vacations %}
-                <h6>Employee: {{ vacation.employee }}</h6>
-            <li>from: {{ vacation.vacation_from }}</li>
-            <li>to: {{ vacation.vacation_to }}</li>
-            <li>status: {{ vacation.status }}</li>
-            <li>replacement employee: {{ vacation.replacement }}</li>
-        <a href="{% url 'accept-vacation' vacation.pk %}" class="btn btn-primary text-white">Accept</a>
-        <a href="{% url 'reject-vacation' vacation.pk %}" class="btn btn-primary text-white">Reject</a>
-            <br>
-            {% empty %}
-                <li>No pending vacation requests</li>
+          <h6>Vacations:</h6>
+          {% for vacation in vacations %}
+          <h6>Employee: {{ vacation.employee }}</h6>
+          <li>from: {{ vacation.vacation_from }}</li>
+          <li>to: {{ vacation.vacation_to }}</li>
+          <li>status: {{ vacation.status }}</li>
+          <li>replacement employee: {{ vacation.replacement }}</li>
+          <a
+            href="{% url 'accept-vacation' vacation.pk %}"
+            class="btn btn-primary text-white"
+            >Accept</a
+          >
+          <a
+            href="{% url 'reject-vacation' vacation.pk %}"
+            class="btn btn-primary text-white"
+            >Reject</a
+          >
+          <br />
+          {% empty %}
+          <li>No pending vacation requests</li>
           {% endfor %}
         </ul>
-            </p>
       </div>
+    </div>
   </div>
-</div>
 
-<div class="container">
-  <div class="row">
-    <div class="col-sm">
-      <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">All approved {{ user }} vacations:</h5>
-        <ul>
-            {% for vacation in vacations_accepted %}
-        <p class="card-text">
-        <li>from: {{ vacation.vacation_from }}</li>
-        <li>to: {{ vacation.vacation_to }}</li>
-        <li>status: {{ vacation.status }}</li>
-        <li>replacement employee: {{ vacation.replacement }}</li>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
+        <div class="card mt-5 border border-dark" style="width: auto">
+          <div class="card-body">
+            <h5 class="card-title">All approved {{ user }} vacations:</h5>
+            <ul>
+              {% for vacation in vacations_accepted %}
+              <p class="card-text">
+                <li>from: {{ vacation.vacation_from }}</li>
+                <li>to: {{ vacation.vacation_to }}</li>
+                <li>status: {{ vacation.status }}</li>
+                <li>replacement employee: {{ vacation.replacement }}</li>
                 {% empty %}
                 <li>No pending vacation requests</li>
-          {% endfor %}
-        </ul>
-        </p>
+                {% endfor %}
+              </p>
+            </ul>
+          </div>
         </div>
-    </div>
-    </div>
-    <div class="col-sm">
-      <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">All approved {{ user }} delegations:</h5>
-        <ul>
-            {% for delegation in delegations_accepted %}
-        <p class="card-text">
-               <h6> Delegation to: {{ delegation.delegation_country }} <br></h6>
-                <li>start date: {{ delegation.start_date }}</li>
-            <li>end date: {{ delegation.end_date }}</li>
-        <li>status: {{ delegation.status }}</li>
-                {% empty %}
-                <li>No approval delegations</li>
-          {% endfor %}
-        </ul>
-        </p>
+      </div>
+      <div class="col-sm">
+        <div class="card mt-5 border border-dark" style="width: auto">
+          <div class="card-body">
+            <h5 class="card-title">All approved {{ user }} delegations:</h5>
+            <ul>
+              {% for delegation in delegations_accepted %}
+              <p class="card-text"></p>
+              <h6>Delegation to: {{ delegation.delegation_country }} <br /></h6>
+              <li>start date: {{ delegation.start_date }}</li>
+              <li>end date: {{ delegation.end_date }}</li>
+              <li>status: {{ delegation.status }}</li>
+              {% empty %}
+              <li>No approval delegations</li>
+              {% endfor %}
+            </ul>
+          </div>
         </div>
-    </div>
-    </div>
-    <div class="col-sm">
-      <div class="card mt-5 border border-dark" style="width: auto;" >
-        <div class="card-body">
-        <h5 class="card-title">All {{ user }} Medical leave:</h5>
+      </div>
+      <div class="col-sm">
+        <div class="card mt-5 border border-dark" style="width: auto">
+          <div class="card-body">
+            <h5 class="card-title">All {{ user }} Medical leave:</h5>
             {% for medical in medicals %}
-        <p class="card-text">
-               <h6> Medical leave from: {{ medical.from_date }} to {{ medical.to_date }} <br></h6>
-                <a href="{% url 'delete-medical' medical.pk %}" class="btn btn-primary text-white">Delete</a>
+            <p class="card-text"></p>
+            <h6>
+              Medical leave from: {{ medical.from_date }} to {{medical.to_date}} <br />
+            </h6>
+            <a
+              href="{% url 'delete-medical' medical.pk %}"
+              class="btn btn-primary text-white"
+              >Delete</a>
             {% endfor %}
-        </p>
-                    <a href="{% url 'create-medical' user.username %}" class="btn btn-primary text-white">Add new</a>
-
-       </div>
-    </div>
+            <a
+              href="{% url 'create-medical' user.username %}"
+              class="btn btn-primary text-white"
+              >Add new</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-<br>
+  <br />
 </div>
 {% endblock %}

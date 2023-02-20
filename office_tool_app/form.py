@@ -34,7 +34,7 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'pesel', 'email', 'birth_date', 'father_name',
-                  'mother_name', 'family_name', 'group', 'position']
+                  'mother_name', 'family_name', 'position']
 
 
 class GroupForm(forms.ModelForm):

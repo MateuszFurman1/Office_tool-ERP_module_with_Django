@@ -1,9 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class User(AbstractUser):
-    pesel = models.PositiveIntegerField(null=True)
+    pesel = models.BigIntegerField(null=True, validators=[MinValueValidator(10000000000), MaxValueValidator(99999999999)])
     birth_date = models.DateField(null=True)
     father_name = models.CharField(max_length=128, null=True)
     mother_name = models.CharField(max_length=128, null=True)

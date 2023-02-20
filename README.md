@@ -9,6 +9,7 @@ https://user-images.githubusercontent.com/106817902/220195579-9082a7e4-059c-4f98
 * See group members
 * Accept/reject delegation/vacation requests for manager group
 * Message system to inform about decision
+* Appk is still in development phase
 
 
 ## How to run
@@ -25,10 +26,13 @@ https://user-images.githubusercontent.com/106817902/220195579-9082a7e4-059c-4f98
 
 * asgiref==3.5.2
 * attrs==22.1.0
+* autopep8==2.0.1
 * convertdate==2.4.0
 * Django==4.1.3
 * django-crispy-forms==1.14.0
 * exceptiongroup==1.0.4
+* factory-boy==3.2.1
+* Faker==17.0.0
 * hijri-converter==2.2.4
 * holidays==0.17.2
 * iniconfig==1.1.1
@@ -36,6 +40,7 @@ https://user-images.githubusercontent.com/106817902/220195579-9082a7e4-059c-4f98
 * packaging==22.0
 * pluggy==1.0.0
 * psycopg2-binary==2.9.5
+* pycodestyle==2.10.0
 * PyMeeus==0.5.11
 * pytest==7.2.0
 * pytest-django==4.5.2

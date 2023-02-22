@@ -19,6 +19,7 @@ https://user-images.githubusercontent.com/106817902/220195579-9082a7e4-059c-4f98
 * create connection to database, for exampe PostgreSQL
 * open pgadmin and type create database officeTool
 * terminal: python manage.py migrate 
+* terminal: python manage.py seed_db- to create dummy data
 * terminal: python manage.py runserver
 * go to http://127.0.0.1:8000
 

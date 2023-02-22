@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from office_tool_app.factories import UserFactory, GroupFactory, AddressHomeFactory, AddressCoreFactory, VacationFactory, MessagesFactory, DelegationFactory, MedicalLeaveFactory
+from office_tool_app.factories import UserFactory, AddressHomeFactory, AddressCoreFactory, VacationFactory, MessagesFactory, DelegationFactory, MedicalLeaveFactory
 from django.db import transaction
 
 class Command(BaseCommand):

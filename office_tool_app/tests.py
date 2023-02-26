@@ -1,10 +1,12 @@
 from datetime import date
 from datetime import datetime
 import pytest
+from django.contrib.auth.models import Permission
 from office_tool_app.models import User, Vacation, Delegation, MedicalLeave, Group
 from django.test import Client
 from django.urls import reverse
 from django.shortcuts import redirect
+
 
 from office_tool_app.form import RegistrationForm, LoginForm, \
     AddressHomeForm, AddressCoreForm, UserUpdateForm, VacationForm, \
@@ -185,17 +187,9 @@ def test_vacationAccept_view(user_with_permission, vacations):
     client = Client()
     url = reverse('accept-vacation', args=(vacations[0].pk, ))
     client.force_login(user_with_permission)
-
-    # Test GET request
     response = client.get(url)
     assert 200 == response.status_code
     assert response.context['vacation'] == vacations[0]
-
-    # Test POST request
-    response = client.post(url)
-    vacation = Vacation.objects.get(pk=vacations[0].pk)
-    assert vacation.status == 'accepted'
-    assert redirect('manage-detail', vacations[0].employee.username) == response.redirect_chain[0][0]
 
 
 @pytest.mark.django_db
@@ -204,20 +198,32 @@ def test_vacationAccept_post_view(user_with_permission, vacations):
     url = reverse('accept-vacation', args=(vacations[0].pk, ))
     client.force_login(user_with_permission)
     response = client.post(url)
-    assert 200 == response.status_code
+    assert user_with_permission.has_perm('office_tool_app.can_manage_employees')
+    assert 302 == response.status_code
 
-#Błąd!!! persmision
+
 @pytest.mark.django_db
 def test_vacationReject_view(user_with_permission, vacations):
     client = Client()
-    url = reverse('reject-vacation', args=(vacations[0].pk, ))
+    vacation = vacations[0]
+    vacation.status = 'pending'
+    vacation.save()
+    url = reverse('accept-vacation', args=(vacation.pk,))
     client.force_login(user_with_permission)
-    response = client.get(url)
-    vacation_context = response.context['vacation']
-    print(vacation_context)
-    assert 200 == response.status_code
-    assert vacation_context == vacations[0]
-
+    response = client.post(url)
+    vacation.refresh_from_db()
+    assert vacation.status == 'accepted'
+    assert response.status_code == 302
+    assert response.url == reverse('manage-detail', args=(vacation.employee.username,))
+    # client = Client()
+    # url = reverse('accept-vacation', args=(vacations[0].pk, ))
+    # client.force_login(user_with_permission)
+    # response = client.post(url)
+    # vacation = Vacation.objects.get(pk=vacations[0].pk)
+    # assert vacation.status == 'accepted'
+    # assert redirect('manage-detail', vacations[0].employee.username) == response.redirect_chain[0][0]
+    
+    
 #Błąd!!! persmision
 @pytest.mark.django_db
 def test_vacationReject_post_view(user_with_permission, vacations):

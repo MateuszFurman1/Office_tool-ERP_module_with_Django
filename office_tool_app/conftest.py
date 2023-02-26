@@ -1,6 +1,7 @@
 from datetime import datetime
 import pytest
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
+from django.contrib.contenttypes.models import ContentType
 from office_tool_app.models import Delegation, Vacation, MedicalLeave, \
     AddressHome, AddressCore, User, Group, Messages
 
@@ -20,10 +21,36 @@ def user():
 
 @pytest.fixture
 def user_with_permission():
-    u = User.objects.create(username='Dariusz')
-    permission = Permission.objects.get(codename='can_manage_employees')
+    u = User.objects.create_user(
+        username='Dariusz',
+        email='testuser@example.com',
+        password='password'
+    )
+    content_type = ContentType.objects.get_for_model(User)
+    permission = Permission.objects.get_or_create(
+        codename='can_manage_employees',
+        content_type=content_type,
+        name='can manage employees',
+    )[0]
     u.user_permissions.add(permission)
+    u = User.object.get(username='Dariusz')
     return u
+    # u = User.objects.create_user(
+    #     username='Dariusz', 
+    #     email='Dariusz@example.com', 
+    #     password='123456'
+    # )
+    # user_ct = ContentType.objects.get(app_label='auth', model='user')
+    # permission, created = Permission.objects.get_or_create(
+    #     content_type=user_ct, 
+    #     codename='can_manage_employees', 
+    #     name="can manage employees"
+    # )
+    # # permission = Permission.objects.get(codename='can_manage_employees' )
+    # # print(permission)
+    # u.user_permissions.add(permission)
+    # u.refresh_from_db()
+    # return u
 
 
 @pytest.fixture

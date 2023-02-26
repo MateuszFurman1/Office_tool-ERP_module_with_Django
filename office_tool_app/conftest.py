@@ -4,13 +4,12 @@ from django.contrib.auth.models import Permission
 from office_tool_app.models import Delegation, Vacation, MedicalLeave, \
     AddressHome, AddressCore, User, Group, Messages
 
-
 @pytest.fixture
 def users():
     name_lst = ['Arkadiusz', 'Marek', 'Janusz', 'Franciszek', 'Julius', 'Adrian']
     lst = []
     for user in range(6):
-        lst.append(User.objects.create(username=name_lst[user-1]))
+        lst.append(User.objects.create(username=name_lst[user - 1]))
     return lst
 
 
@@ -43,7 +42,7 @@ def vacations(users):
     today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = Vacation.objects.create(employee=users[0], replacement=users[n+1], vacation_from=today, vacation_to=today,
+        p = Vacation.objects.create(employee=users[0], replacement=users[n + 1], vacation_from=today, vacation_to=today,
                                     status='pending')
         lst.append(p)
     return lst
@@ -64,7 +63,7 @@ def message(users):
     today = str(datetime.now().date())
     lst = []
     for n in range(5):
-        p = Messages.objects.create(from_employee=users[n+1], to_employee=users[0],
+        p = Messages.objects.create(from_employee=users[n + 1], to_employee=users[0],
                                     sending_date=today, message='test')
         lst.append(p)
     return lst
@@ -89,4 +88,4 @@ def groups(users):
     e = Group.objects.create(name='non-managerial employees')
     lst.append(m)
     lst.append(e)
-    return  lst
+    return lst

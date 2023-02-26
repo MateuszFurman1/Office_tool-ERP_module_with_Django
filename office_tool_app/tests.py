@@ -1,9 +1,10 @@
 from datetime import date
 from datetime import datetime
 import pytest
-from office_tool_app.models import User, Vacation, Delegation, MedicalLeave
+from office_tool_app.models import User, Vacation, Delegation, MedicalLeave, Group
 from django.test import Client
 from django.urls import reverse
+from django.shortcuts import redirect
 
 from office_tool_app.form import RegistrationForm, LoginForm, \
     AddressHomeForm, AddressCoreForm, UserUpdateForm, VacationForm, \
@@ -31,25 +32,27 @@ def test_registration_get_view():
 @pytest.mark.django_db
 def test_registration_post_valid_view():
     data = {
-        'username': 'name1',
-        'first_name': 'test',
-        'last_name': 'test',
-        'email': 'test@email.com',
-        'pesel': '2147483647',
-        'birth_date': '2022-11-28',
-        'father_name': 'test',
-        'mother_name': 'test',
-        'family_name': 'test',
-        'group': '',
-        'position': 'test',
-        'password': '123',
-        're_password': '123'
+        'username': 'testuser',
+        'first_name': 'Test',
+        'last_name': 'User',
+        'pesel': '12345678901',
+        'email': 'testuser@example.com',
+        'password': 'testpassword',
+        're_password': 'testpassword',
+        'birth_date': date(1990, 1, 1),
+        'father_name': 'John',
+        'mother_name': 'Doe',
+        'family_name': 'Doe',
+        'group': "",
+        'position': 'Test Position',
     }
     client = Client()
     url = reverse('registration')
     response = client.post(url, data)
-    assert 302 == response.status_code
-    assert User.objects.get(username='name1')
+    print(response.content)
+    assert response.status_code == 302
+    assert response.url == reverse('login')
+    assert User.objects.filter(username='testuser').exists()
 
 
 @pytest.mark.django_db
@@ -113,17 +116,19 @@ def test_profile_get(user):
 @pytest.mark.django_db
 def test_profile_post(user):
     data = {
-        'username': 'name1',
-        'first_name': 'test',
-        'last_name': 'test',
-        'email': 'test@email.com',
-        'pesel': '2147483647',
-        'birth_date': '2022-11-28',
-        'father_name': 'test',
-        'mother_name': 'test',
-        'family_name': 'test',
-        'group': '',
-        'position': 'test',
+        'username': 'testuser',
+        'first_name': 'Test',
+        'last_name': 'User',
+        'pesel': '12345678901',
+        'email': 'testuser@example.com',
+        'password': 'testpassword',
+        're_password': 'testpassword',
+        'birth_date': date(1990, 1, 1),
+        'father_name': 'John',
+        'mother_name': 'Doe',
+        'family_name': 'Doe',
+        'group': "",
+        'position': 'Test Position',
     }
     client = Client()
     url = reverse('profile')
@@ -155,12 +160,12 @@ def test_createVacation_view(user):
     form = response.context['form']
     assert isinstance(form, VacationForm)
 
-#Do poprawy !!!!
+
 @pytest.mark.django_db
 def test_createVacation_post_view(users):
     today = str(datetime.now().date())
     data = {
-        'replacement': users[1],
+        'replacement': users[1].id,
         'vacation_from': today,
         'vacation_to': today
     }
@@ -169,19 +174,28 @@ def test_createVacation_post_view(users):
     client.force_login(users[0])
     response = client.post(url, data)
     assert 302 == response.status_code
-    assert Vacation.objects.get(employee=users[0])
+    vacation = Vacation.objects.get(employee=users[0])
+    assert vacation.replacement == users[1]
+    assert str(vacation.vacation_from) == today
+    assert str(vacation.vacation_to) == today
 
-#Błąd!!! permision
+
 @pytest.mark.django_db
 def test_vacationAccept_view(user_with_permission, vacations):
     client = Client()
     url = reverse('accept-vacation', args=(vacations[0].pk, ))
     client.force_login(user_with_permission)
+
+    # Test GET request
     response = client.get(url)
-    vacation_context = response.context['vacation']
-    print(vacation_context)
     assert 200 == response.status_code
-    assert vacation_context == vacations[0]
+    assert response.context['vacation'] == vacations[0]
+
+    # Test POST request
+    response = client.post(url)
+    vacation = Vacation.objects.get(pk=vacations[0].pk)
+    assert vacation.status == 'accepted'
+    assert redirect('manage-detail', vacations[0].employee.username) == response.redirect_chain[0][0]
 
 
 @pytest.mark.django_db
@@ -330,7 +344,7 @@ def test_createMedicalLeave_post_view(user_with_permission):
     response = client.post(url, data)
     assert 302 == response.status_code
     assert MedicalLeave.objects.get(employee=user_with_permission)
-
+    
 
 @pytest.mark.django_db
 def test_medicalLeave_delete_view(users, medical_leaves):

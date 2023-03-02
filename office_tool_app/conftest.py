@@ -20,20 +20,23 @@ def user():
 
 
 @pytest.fixture
-def user_with_permission():
+def my_permission():
+    permission, _ = Permission.objects.get_or_create(
+        codename='can_manage_employees',
+        name='can manage employees',
+        content_type=ContentType.objects.get_for_model(User)
+    )
+    return permission
+
+
+@pytest.fixture
+def user_with_permission(my_permission):
     u = User.objects.create_user(
         username='Dariusz',
         email='testuser@example.com',
         password='password'
     )
-    content_type = ContentType.objects.get_for_model(User)
-    permission = Permission.objects.get_or_create(
-        codename='can_manage_employees',
-        content_type=content_type,
-        name='can manage employees',
-    )[0]
-    u.user_permissions.add(permission)
-    u = User.object.get(username='Dariusz')
+    u.user_permissions.add(my_permission)
     return u
     # u = User.objects.create_user(
     #     username='Dariusz', 
@@ -65,7 +68,16 @@ def delegations(users):
 
 
 @pytest.fixture
-def vacations(users):
+def vacation(users):
+    today = str(datetime.now().date())
+    vacation = Vacation.objects.create(
+    employee=users[0],
+    replacement=users[1],
+    vacation_from=today,
+    vacation_to=today,
+    status='pending'
+    )
+    return vacation
     today = str(datetime.now().date())
     lst = []
     for n in range(5):

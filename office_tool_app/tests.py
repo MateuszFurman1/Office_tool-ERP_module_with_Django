@@ -192,23 +192,23 @@ def test_vacationAccept_view(user_with_permission, vacations):
     assert response.context['vacation'] == vacations[0]
 
 
-@pytest.mark.django_db
-def test_vacationAccept_post_view(user_with_permission, vacation):
-    client = Client()
-    url = reverse('accept-vacation', args=(vacation.pk, ))
-    client.force_login(user_with_permission)
-    response = client.post(url)
-    assert response.status_code == 302
-    vacation.refresh_from_db()
-    assert vacation.status == 'accepted'
 # @pytest.mark.django_db
-# def test_vacationAccept_post_view(user_with_permission, vacations):
+# def test_vacationAccept_post_view(user_with_permission, vacation):
 #     client = Client()
-#     url = reverse('accept-vacation', args=(vacations[0].pk, ))
+#     url = reverse('accept-vacation', args=(vacation.pk, ))
 #     client.force_login(user_with_permission)
 #     response = client.post(url)
-#     assert user_with_permission.has_perm('office_tool_app.can_manage_employees')
-#     assert 302 == response.status_code
+#     assert response.status_code == 302
+#     vacation.refresh_from_db()
+#     assert vacation.status == 'accepted'
+@pytest.mark.django_db
+def test_vacationAccept_post_view(user_with_permission, vacations):
+    client = Client()
+    url = reverse('accept-vacation', args=(vacations[0].pk, ))
+    client.force_login(user_with_permission)
+    response = client.post(url)
+    assert user_with_permission.has_perm('office_tool_app.can_manage_employees')
+    assert 302 == response.status_code
 
 
 @pytest.mark.django_db

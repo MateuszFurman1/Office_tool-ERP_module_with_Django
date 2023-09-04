@@ -11,6 +11,10 @@ https://user-images.githubusercontent.com/106817902/220195579-9082a7e4-059c-4f98
 * Message system to inform about decision
 * Appk is still in development phase
 
+App, which helps in office task. Two groups with different permissions. Employees group can send request for holiday, delegation and medical leave and see employees from his group. Also can see pending, accepted and rejected request. User is informed by message system about his request.  Second group- manager, have permission to accept and reject pending from subordinate members. Also can see which of subordinate member is today on vacation/delegation. Registration and login/logout system are implemented for both groups. Pytest covers all views with fixtures. Project is still continued. Future features planned to add: calendar, delegation calculation, service desk ticket, more accurate delegation model.
+Tools & technologies used in project:
+python, django framework, postgreSQL, pytest, Bootstrap, HTML, CSS, pycharm
+
 
 ## How to run
 * clone repository
